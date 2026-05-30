@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/drone-delivery-docs/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Advanced Delivery Drones</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+      // GitHub Pages SPA redirect hack for handling 404s
+      const path = window.location.pathname;
+      const parts = path.split('/');
+      
+      // Redirect to the index with the path preserved in URL
+      // This allows the SPA router to handle the routing
+      if (!path.includes('.')) {
+        // Store the original path in sessionStorage so the app can use it
+        sessionStorage.setItem('redirect', path);
+        // Redirect to index.html with a query param to signal redirect
+        window.location.href = '/drone-delivery-docs/?redirect=' + encodeURIComponent(path);
+      }
+    </script>
+  </body>
+</html>
