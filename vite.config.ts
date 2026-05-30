@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
 export default defineConfig({
-  base: process.env.BASE_URL || '/drone-delivery-docs/',
+  base: '/drone-delivery-docs/',
   plugins: [tailwindcss(), react()],
   resolve: {
     alias: {
