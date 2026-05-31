@@ -223,40 +223,40 @@ function DocsPage() {
 
   return (
     <SiteLayout>
-      <section className="container-page py-16">
+      <section className="container-page py-8 sm:py-16">
         {/* Header */}
-        <header className="mb-12">
-          <h1 className="text-4xl font-bold tracking-tight">Documentation</h1>
-          <p className="mt-3 text-lg text-muted-foreground">
+        <header className="mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Documentation</h1>
+          <p className="mt-2 sm:mt-3 text-base sm:text-lg text-muted-foreground">
             Physical drone deliveries for Paper servers
           </p>
-          <div className="mt-5 flex flex-wrap gap-2">
-            <a href="https://modrinth.com/plugin/advanceddeliverydrones#download" target="_blank" rel="noreferrer" className="btn-brand h-10 text-sm">
+          <div className="mt-4 sm:mt-5 flex flex-wrap gap-2">
+            <a href="https://modrinth.com/plugin/advanceddeliverydrones#download" target="_blank" rel="noreferrer" className="btn-brand h-10 text-xs sm:text-sm px-3 sm:px-4">
               <Download className="h-4 w-4" /> Latest release
             </a>
-            <a href="https://github.com/EinfachJan7/AdvancedDeliveryDrones" target="_blank" rel="noreferrer" className="btn-ghost h-10 text-sm">
+            <a href="https://github.com/EinfachJan7/AdvancedDeliveryDrones" target="_blank" rel="noreferrer" className="btn-ghost h-10 text-xs sm:text-sm px-3 sm:px-4">
               <Github className="h-4 w-4" /> Source
             </a>
           </div>
         </header>
 
         {/* Tab Navigation */}
-        <div className="mb-8 border-b border-white/10">
-          <div className="flex flex-wrap gap-1">
+        <div className="mb-6 sm:mb-8 border-b border-white/10 overflow-x-auto">
+          <div className="flex flex-nowrap gap-1">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 rounded-t-md px-4 py-2 text-sm font-medium transition ${
+                  className={`flex items-center gap-2 rounded-t-md px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition whitespace-nowrap ${
                     activeTab === tab.id
                       ? "border-b-2 border-[var(--color-accent)] bg-white/5 text-foreground"
                       : "text-muted-foreground hover:bg-white/5"
                   }`}
                 >
                   <Icon className="h-4 w-4" />
-                  {tab.label}
+                  <span className="hidden sm:inline">{tab.label}</span>
                 </button>
               );
             })}
@@ -268,84 +268,84 @@ function DocsPage() {
           {/* Features */}
           {activeTab === "features" && (
             <div>
-              <h2 className="mb-6 text-2xl font-bold">Features</h2>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <h2 className="mb-4 sm:mb-6 text-2xl sm:text-3xl font-bold">Features</h2>
+              <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {features.map((feature) => {
                   const Icon = feature.icon;
                   return (
-                    <div key={feature.title} className="card-surface space-y-3 p-6">
+                    <div key={feature.title} className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6">
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-accent)]/20">
                         <Icon className="h-5 w-5 text-[var(--color-accent)]" />
                       </div>
                       <div>
-                        <h3 className="font-semibold">{feature.title}</h3>
-                        <p className="mt-2 text-sm text-muted-foreground">{feature.desc}</p>
+                        <h3 className="font-semibold text-sm sm:text-base">{feature.title}</h3>
+                        <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">{feature.desc}</p>
                       </div>
                     </div>
                   );
                 })}
                 {/* Additional Features */}
-                <div className="card-surface space-y-3 p-6">
+                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-accent)]/20">
                     <Sparkles className="h-5 w-5 text-[var(--color-accent)]" />
                   </div>
                   <div>
-                    <h3 className="font-semibold">🪂 Elytra & Airborne Follow</h3>
-                    <p className="mt-2 text-sm text-muted-foreground">Drone tracks gliding receivers (+5 Y-offset) &amp; airborne players (&gt;5 blocks high). Dynamic relocation on ground contact.</p>
+                    <h3 className="font-semibold text-sm sm:text-base">🪂 Elytra & Airborne Follow</h3>
+                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">Drone tracks gliding receivers (+5 Y-offset) &amp; airborne players (&gt;5 blocks high). Dynamic relocation on ground contact.</p>
                   </div>
                 </div>
-                <div className="card-surface space-y-3 p-6">
+                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-accent)]/20">
                     <Sparkles className="h-5 w-5 text-[var(--color-accent)]" />
                   </div>
                   <div>
-                    <h3 className="font-semibold">🐾 Animal Transport</h3>
-                    <p className="mt-2 text-sm text-muted-foreground">Send leashed animals via GUI. Invulnerable in transit, respawned at destination. Configurable max per drone.</p>
+                    <h3 className="font-semibold text-sm sm:text-base">🐾 Animal Transport</h3>
+                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">Send leashed animals via GUI. Invulnerable in transit, respawned at destination. Configurable max per drone.</p>
                   </div>
                 </div>
-                <div className="card-surface space-y-3 p-6">
+                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-accent)]/20">
                     <Sparkles className="h-5 w-5 text-[var(--color-accent)]" />
                   </div>
                   <div>
-                    <h3 className="font-semibold">🔔 Discord Webhooks</h3>
-                    <p className="mt-2 text-sm text-muted-foreground">Real-time webhook notifications for sent, delivered, declined &amp; expired drones with rich embeds.</p>
+                    <h3 className="font-semibold text-sm sm:text-base">🔔 Discord Webhooks</h3>
+                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">Real-time webhook notifications for sent, delivered, declined &amp; expired drones with rich embeds.</p>
                   </div>
                 </div>
-                <div className="card-surface space-y-3 p-6">
+                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-accent)]/20">
                     <Sparkles className="h-5 w-5 text-[var(--color-accent)]" />
                   </div>
                   <div>
-                    <h3 className="font-semibold">🖥 GUIs & Customization</h3>
-                    <p className="mt-2 text-sm text-muted-foreground">Main menu, player/socket selection, socket edit with sign rename. Live reload with /drone reload.</p>
+                    <h3 className="font-semibold text-sm sm:text-base">🖥 GUIs & Customization</h3>
+                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">Main menu, player/socket selection, socket edit with sign rename. Live reload with /drone reload.</p>
                   </div>
                 </div>
-                <div className="card-surface space-y-3 p-6">
+                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-accent)]/20">
                     <Sparkles className="h-5 w-5 text-[var(--color-accent)]" />
                   </div>
                   <div>
-                    <h3 className="font-semibold">💾 Persistence & Safety</h3>
-                    <p className="mt-2 text-sm text-muted-foreground">UUID-based tracking with YAML storage. Server restart returns items to senders &amp; cleans orphaned entities.</p>
+                    <h3 className="font-semibold text-sm sm:text-base">💾 Persistence & Safety</h3>
+                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">UUID-based tracking with YAML storage. Server restart returns items to senders &amp; cleans orphaned entities.</p>
                   </div>
                 </div>
-                <div className="card-surface space-y-3 p-6">
+                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-accent)]/20">
                     <Sparkles className="h-5 w-5 text-[var(--color-accent)]" />
                   </div>
                   <div>
-                    <h3 className="font-semibold">📍 Locate Landed Drones</h3>
-                    <p className="mt-2 text-sm text-muted-foreground">/drone locate shows particle trail to nearest drone. Displays sender name, distance &amp; coordinates.</p>
+                    <h3 className="font-semibold text-sm sm:text-base">📍 Locate Landed Drones</h3>
+                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">/drone locate shows particle trail to nearest drone. Displays sender name, distance &amp; coordinates.</p>
                   </div>
                 </div>
-                <div className="card-surface space-y-3 p-6">
+                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-accent)]/20">
                     <Sparkles className="h-5 w-5 text-[var(--color-accent)]" />
                   </div>
                   <div>
-                    <h3 className="font-semibold">✨ Hologram & Boss Bar</h3>
-                    <p className="mt-2 text-sm text-muted-foreground">Hologram shows recipient name &amp; live despawn countdown. Boss bar displays distance &amp; ETA.</p>
+                    <h3 className="font-semibold text-sm sm:text-base">✨ Hologram & Boss Bar</h3>
+                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">Hologram shows recipient name &amp; live despawn countdown. Boss bar displays distance &amp; ETA.</p>
                   </div>
                 </div>
                 <div className="card-surface space-y-3 p-6">
@@ -365,27 +365,27 @@ function DocsPage() {
           {/* Commands */}
           {activeTab === "commands" && (
             <div>
-              <h2 className="mb-6 text-2xl font-bold">Commands</h2>
-              <p className="mb-6 text-sm text-muted-foreground">Root: <code className="code-inline">/drone</code> — Opens main GUI when run without arguments.</p>
+              <h2 className="mb-4 sm:mb-6 text-2xl sm:text-3xl font-bold">Commands</h2>
+              <p className="mb-4 sm:mb-6 text-xs sm:text-sm text-muted-foreground">Root: <code className="code-inline">/drone</code> — Opens main GUI when run without arguments.</p>
               <div className="space-y-6">
                 {commandGroups.map((group) => (
                   <div key={group.title}>
                     <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">{group.title}</h3>
-                    <div className="card-surface overflow-hidden">
+                    <div className="card-surface overflow-x-auto">
                       <table className="table-docs">
                         <thead>
                           <tr>
-                            <th>Command</th>
-                            <th>Description</th>
-                            <th>Permission</th>
+                            <th className="whitespace-nowrap">Command</th>
+                            <th className="hidden sm:table-cell">Description</th>
+                            <th className="hidden md:table-cell">Permission</th>
                           </tr>
                         </thead>
                         <tbody>
                           {group.rows.map((row) => (
                             <tr key={row.cmd}>
-                              <td><code className="code-inline text-xs">{row.cmd}</code></td>
-                              <td className="text-muted-foreground">{row.desc}</td>
-                              <td><code className="code-inline text-xs">{row.perm}</code></td>
+                              <td className="whitespace-nowrap"><code className="code-inline text-xs">{row.cmd}</code></td>
+                              <td className="hidden sm:table-cell text-muted-foreground text-sm">{row.desc}</td>
+                              <td className="hidden md:table-cell"><code className="code-inline text-xs">{row.perm}</code></td>
                             </tr>
                           ))}
                         </tbody>
@@ -400,23 +400,23 @@ function DocsPage() {
           {/* Permissions */}
           {activeTab === "permissions" && (
             <div>
-              <h2 className="mb-6 text-2xl font-bold">Permissions</h2>
-              <p className="mb-6 text-sm text-muted-foreground">Hierarchical permission tree. Parent nodes grant all children.</p>
-              <div className="card-surface overflow-hidden">
+              <h2 className="mb-4 sm:mb-6 text-2xl sm:text-3xl font-bold">Permissions</h2>
+              <p className="mb-4 sm:mb-6 text-xs sm:text-sm text-muted-foreground">Hierarchical permission tree. Parent nodes grant all children.</p>
+              <div className="card-surface overflow-x-auto">
                 <table className="table-docs">
                   <thead>
                     <tr>
-                      <th>Node</th>
+                      <th className="whitespace-nowrap">Node</th>
                       <th>Description</th>
-                      <th>Default</th>
+                      <th className="hidden sm:table-cell whitespace-nowrap">Default</th>
                     </tr>
                   </thead>
                   <tbody>
                     {permissions.map((perm) => (
                       <tr key={perm.node}>
-                        <td><code className="code-inline text-xs">{perm.node}</code></td>
-                        <td className="text-muted-foreground">{perm.desc}</td>
-                        <td><span className="badge-soft">{perm.def}</span></td>
+                        <td className="whitespace-nowrap"><code className="code-inline text-xs">{perm.node}</code></td>
+                        <td className="text-muted-foreground text-sm">{perm.desc}</td>
+                        <td className="hidden sm:table-cell"><span className="badge-soft text-xs">{perm.def}</span></td>
                       </tr>
                     ))}
                   </tbody>
@@ -428,13 +428,13 @@ function DocsPage() {
           {/* Configuration */}
           {activeTab === "configuration" && (
             <div>
-              <h2 className="mb-6 text-2xl font-bold">Configuration</h2>
-              <p className="mb-6 text-sm text-muted-foreground">All behavior in <code className="code-inline">config.yml</code>. GUIs in <code className="code-inline">gui.yml</code>. Use <code className="code-inline">/drone reload</code> to apply changes.</p>
-              <div className="card-surface overflow-hidden">
+              <h2 className="mb-4 sm:mb-6 text-2xl sm:text-3xl font-bold">Configuration</h2>
+              <p className="mb-4 sm:mb-6 text-xs sm:text-sm text-muted-foreground">All behavior in <code className="code-inline">config.yml</code>. GUIs in <code className="code-inline">gui.yml</code>. Use <code className="code-inline">/drone reload</code> to apply changes.</p>
+              <div className="card-surface overflow-x-auto">
                 <table className="table-docs">
                   <thead>
                     <tr>
-                      <th>Key</th>
+                      <th className="whitespace-nowrap">Key</th>
                       <th>Description</th>
                     </tr>
                   </thead>
@@ -442,7 +442,7 @@ function DocsPage() {
                     {configKeys.map((config) => (
                       <tr key={config.key}>
                         <td className="whitespace-nowrap"><code className="code-inline text-xs">{config.key}</code></td>
-                        <td className="text-muted-foreground">{config.desc}</td>
+                        <td className="text-muted-foreground text-sm">{config.desc}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -454,37 +454,37 @@ function DocsPage() {
           {/* PlaceholderAPI */}
           {activeTab === "placeholders" && (
             <div>
-              <h2 className="mb-6 text-2xl font-bold">PlaceholderAPI</h2>
-              <div className="card-surface mb-6 p-6">
-                <div className="grid gap-4 sm:grid-cols-3">
+              <h2 className="mb-4 sm:mb-6 text-2xl sm:text-3xl font-bold">PlaceholderAPI</h2>
+              <div className="card-surface mb-4 sm:mb-6 p-4 sm:p-6">
+                <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 md:grid-cols-3">
                   <div>
                     <p className="text-xs text-muted-foreground">Identifier</p>
-                    <p className="mt-1 font-mono text-sm font-semibold">deliverydrones</p>
+                    <p className="mt-1 font-mono text-xs sm:text-sm font-semibold break-all">deliverydrones</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Syntax</p>
-                    <p className="mt-1 font-mono text-sm">%deliverydrones_&lt;key&gt;%</p>
+                    <p className="mt-1 font-mono text-xs sm:text-sm break-all">%deliverydrones_&lt;key&gt;%</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Test Command</p>
-                    <p className="mt-1 font-mono text-sm">/papi parse me %deliverydrones_outgoing_count%</p>
+                    <p className="mt-1 font-mono text-xs sm:text-sm break-all">/papi parse me %deliverydrones_outgoing_count%</p>
                   </div>
                 </div>
               </div>
 
-              <h3 className="mb-4 text-lg font-semibold">Player Placeholders</h3>
-              <div className="card-surface overflow-hidden mb-6">
+              <h3 className="mb-3 sm:mb-4 text-base sm:text-lg font-semibold">Player Placeholders</h3>
+              <div className="card-surface overflow-x-auto mb-6">
                 <table className="table-docs">
                   <thead>
                     <tr>
-                      <th>Placeholder</th>
+                      <th className="whitespace-nowrap">Placeholder</th>
                       <th>Description</th>
                     </tr>
                   </thead>
                   <tbody>
                     {phPlayer.map((ph) => (
                       <tr key={ph.ph}>
-                        <td><code className="code-inline text-xs">%deliverydrones_{ph.ph}%</code></td>
+                        <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_{ph.ph}%</code></td>
                         <td className="text-muted-foreground text-sm">{ph.desc}</td>
                       </tr>
                     ))}
@@ -492,33 +492,33 @@ function DocsPage() {
                 </table>
               </div>
 
-              <h3 className="mb-4 text-lg font-semibold">Server Totals</h3>
-              <div className="card-surface overflow-hidden mb-6">
+              <h3 className="mb-3 sm:mb-4 text-base sm:text-lg font-semibold">Server Totals</h3>
+              <div className="card-surface overflow-x-auto mb-4 sm:mb-6">
                 <table className="table-docs">
                   <tbody>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_total_drones%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_total_drones%</code></td>
                       <td className="text-muted-foreground text-sm">All active drones</td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_total_flying%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_total_flying%</code></td>
                       <td className="text-muted-foreground text-sm">Flying drones</td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_total_landed%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_total_landed%</code></td>
                       <td className="text-muted-foreground text-sm">Landed drones</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
 
-              <h3 className="mb-4 text-lg font-semibold">Outgoing / Incoming Drone Fields</h3>
-              <p className="mb-3 text-xs text-muted-foreground">Use indexed placeholders like <code className="code-inline">%deliverydrones_outgoing_1_sender%</code> or omit index for first: <code className="code-inline">%deliverydrones_outgoing_sender%</code></p>
-              <div className="card-surface overflow-hidden mb-6">
+              <h3 className="mb-3 sm:mb-4 text-base sm:text-lg font-semibold">Outgoing / Incoming Drone Fields</h3>
+              <p className="mb-2 sm:mb-3 text-xs text-muted-foreground">Use indexed placeholders like <code className="code-inline">%deliverydrones_outgoing_1_sender%</code> or omit index for first: <code className="code-inline">%deliverydrones_outgoing_sender%</code></p>
+              <div className="card-surface overflow-x-auto mb-6">
                 <table className="table-docs">
                   <thead>
                     <tr>
-                      <th>Field</th>
+                      <th className="whitespace-nowrap">Field</th>
                       <th>Description</th>
                     </tr>
                   </thead>
@@ -648,112 +648,112 @@ function DocsPage() {
                 </table>
               </div>
 
-              <h3 className="mb-4 text-lg font-semibold">Config Mirrors</h3>
-              <p className="mb-3 text-xs text-muted-foreground">Access config values with <code className="code-inline">%deliverydrones_config_*%</code> to mirror <code className="code-inline">settings.drone.*</code> keys.</p>
-              <div className="card-surface overflow-hidden">
+              <h3 className="mb-3 sm:mb-4 text-base sm:text-lg font-semibold">Config Mirrors</h3>
+              <p className="mb-2 sm:mb-3 text-xs text-muted-foreground">Access config values with <code className="code-inline">%deliverydrones_config_*%</code> to mirror <code className="code-inline">settings.drone.*</code> keys.</p>
+              <div className="card-surface overflow-x-auto">
                 <table className="table-docs">
                   <thead>
                     <tr>
-                      <th>Placeholder</th>
-                      <th>Maps to (settings.drone.*)</th>
+                      <th className="whitespace-nowrap">Placeholder</th>
+                      <th className="whitespace-nowrap">Maps to (settings.drone.*)</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_speed%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">speed</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_speed%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">speed</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_startup_speed%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">startup-speed</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_startup_speed%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">startup-speed</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_startup_seconds%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">startup-seconds</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_startup_seconds%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">startup-seconds</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_approach_speed%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">approach-speed</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_approach_speed%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">approach-speed</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_approach_distance%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">approach-distance</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_approach_distance%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">approach-distance</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_delivery_radius%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">delivery-radius</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_delivery_radius%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">delivery-radius</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_despawn_minutes%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">despawn-time-minutes</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_despawn_minutes%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">despawn-time-minutes</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_despawn_mode%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">despawn-mode</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_despawn_mode%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">despawn-mode</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_inventory_size%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">inventory-size</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_inventory_size%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">inventory-size</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_max_active_per_sender%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">max-active-per-sender</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_max_active_per_sender%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">max-active-per-sender</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_max_sockets_per_player%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">max-sockets-per-player</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_max_sockets_per_player%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">max-sockets-per-player</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_max_leashed_animals%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">max-leashed-animals-per-drone</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_max_leashed_animals%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">max-leashed-animals-per-drone</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_carry_leashed_animals%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">carry-leashed-animals</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_carry_leashed_animals%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">carry-leashed-animals</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_follow_gliding%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">follow-gliding-player</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_follow_gliding%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">follow-gliding-player</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_follow_airborne%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">follow-airborne-player-before-landing</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_follow_airborne%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">follow-airborne-player-before-landing</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_airborne_follow_min_height%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">airborne-follow-min-height</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_airborne_follow_min_height%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">airborne-follow-min-height</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_airborne_follow_max_seconds%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">airborne-follow-max-seconds-after-start</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_airborne_follow_max_seconds%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">airborne-follow-max-seconds-after-start</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_hologram_enabled%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">hologram.enabled</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_hologram_enabled%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">hologram.enabled</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_bossbar_enabled%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">bossbar.enabled</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_bossbar_enabled%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">bossbar.enabled</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_container_integration%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">container-integration.enabled</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_container_integration%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">container-integration.enabled</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_container_search_radius%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">container-integration.search-radius</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_container_search_radius%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">container-integration.search-radius</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_launch_animation%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">launch-animation.enabled</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_launch_animation%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">launch-animation.enabled</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_collection_animation%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">collection-animation.enabled</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_collection_animation%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">collection-animation.enabled</code></td>
                     </tr>
                     <tr>
-                      <td><code className="code-inline text-xs">%deliverydrones_config_locate_particles%</code></td>
-                      <td className="text-muted-foreground text-sm"><code className="code-inline text-xs">locate-particles.enabled</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_locate_particles%</code></td>
+                      <td className="whitespace-nowrap"><code className="code-inline text-xs">locate-particles.enabled</code></td>
                     </tr>
                   </tbody>
                 </table>

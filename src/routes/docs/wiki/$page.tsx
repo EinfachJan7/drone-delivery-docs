@@ -117,7 +117,7 @@ function WikiPage() {
         </div>
 
         {/* Main Content */}
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-12">
           {loading ? (
             <div className="flex justify-center items-center min-h-96">
               <div className="text-center">
@@ -126,21 +126,21 @@ function WikiPage() {
               </div>
             </div>
           ) : error ? (
-            <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-6">
+            <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4 sm:p-6">
               <h2 className="text-red-900 dark:text-red-200 font-semibold mb-2">
                 Error Loading Page
               </h2>
-              <p className="text-red-800 dark:text-red-300">{error}</p>
-              <div className="mt-4 flex gap-4">
+              <p className="text-red-800 dark:text-red-300 text-sm sm:text-base">{error}</p>
+              <div className="mt-4 flex flex-col sm:flex-row gap-2 sm:gap-4">
                 <a
                   href="/docs/wiki/index"
-                  className="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  className="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-center text-sm sm:text-base"
                 >
                   Back to Wiki Index
                 </a>
                 <a
                   href="/"
-                  className="inline-block px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-900 dark:text-slate-100 rounded-lg transition-colors"
+                  className="inline-block px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-900 dark:text-slate-100 rounded-lg transition-colors text-center text-sm sm:text-base"
                 >
                   Home
                 </a>
@@ -148,18 +148,18 @@ function WikiPage() {
             </div>
           ) : content ? (
             <>
-              <article className="prose prose-sm sm:prose lg:prose-lg dark:prose-invert max-w-none">
+              <article className="prose prose-sm sm:prose md:prose-lg dark:prose-invert max-w-none">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                   {content.content}
                 </ReactMarkdown>
               </article>
 
               {/* Related Links */}
-              <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
+              <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-slate-200 dark:border-slate-800">
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">
                   Other Wiki Pages
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   {[
                     { name: "getting-started", label: "Getting Started" },
                     { name: "commands", label: "Commands Reference" },
@@ -172,7 +172,7 @@ function WikiPage() {
                     <a
                       key={link.name}
                       href={`/docs/wiki/${link.name}`}
-                      className={`p-3 rounded-lg border transition-all ${
+                      className={`p-3 rounded-lg border text-sm sm:text-base transition-all ${
                         page === link.name
                           ? "bg-blue-100 dark:bg-blue-950/30 border-blue-300 dark:border-blue-800"
                           : "border-slate-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-800 hover:bg-slate-50 dark:hover:bg-slate-800/50"
