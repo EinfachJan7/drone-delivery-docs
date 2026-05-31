@@ -16,10 +16,10 @@ export function DownloadSection() {
 
   return (
     <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-12 px-6 rounded-lg shadow-lg">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center gap-3 mb-4">
-          <Download size={28} />
-          <h2 className="text-3xl font-bold">Download Advanced Delivery Drones</h2>
+      <div className="max-w-5xl mx-auto">
+        <div className="flex items-center gap-2 sm:gap-3 mb-4">
+          <Download size={24} className="sm:w-7 sm:h-7" />
+          <h2 className="text-2xl sm:text-3xl font-bold">Download Advanced Delivery Drones</h2>
         </div>
 
         {loading ? (
@@ -29,17 +29,19 @@ export function DownloadSection() {
           </div>
         ) : version ? (
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 pt-4">
               {/* Modrinth Button */}
               <a
                 href={version.modrinthUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 bg-white text-blue-700 font-semibold py-3 px-6 rounded hover:bg-blue-50 transition"
+                className="flex flex-col items-center justify-center gap-1 bg-white text-blue-700 font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded hover:bg-blue-50 transition text-xs sm:text-sm"
               >
-                <Download size={20} />
-                Download from Modrinth
-                <ExternalLink size={16} className="ml-auto" />
+                <div className="flex items-center gap-1">
+                  <Download size={18} />
+                  <span>Modrinth</span>
+                </div>
+                <ExternalLink size={14} />
               </a>
 
               {/* Hangar Button */}
@@ -47,16 +49,52 @@ export function DownloadSection() {
                 href={version.hangarUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 bg-white text-blue-700 font-semibold py-3 px-6 rounded hover:bg-blue-50 transition"
+                className="flex flex-col items-center justify-center gap-1 bg-white text-blue-700 font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded hover:bg-blue-50 transition text-xs sm:text-sm"
               >
-                <Download size={20} />
-                Download from Hangar
-                <ExternalLink size={16} className="ml-auto" />
+                <div className="flex items-center gap-1">
+                  <Download size={18} />
+                  <span>Hangar</span>
+                </div>
+                <ExternalLink size={14} />
+              </a>
+
+              {/* Spigot Button */}
+              <a
+                href={version.spigotUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center justify-center gap-1 bg-white text-blue-700 font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded hover:bg-blue-50 transition text-xs sm:text-sm"
+              >
+                <div className="flex items-center gap-1">
+                  <Download size={18} />
+                  <span>Spigot</span>
+                </div>
+                <ExternalLink size={14} />
               </a>
             </div>
 
+            {/* Download Stats */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 pt-2">
+              <div className="bg-white/10 rounded p-2 sm:p-3 text-center">
+                <p className="text-xs sm:text-sm text-blue-200">Version</p>
+                <p className="font-semibold text-sm sm:text-base">{version.latestVersion}</p>
+              </div>
+              <div className="bg-white/10 rounded p-2 sm:p-3 text-center">
+                <p className="text-xs sm:text-sm text-blue-200">Modrinth DL</p>
+                <p className="font-semibold text-sm sm:text-base">{version.downloads.toLocaleString()}</p>
+              </div>
+              <div className="bg-white/10 rounded p-2 sm:p-3 text-center">
+                <p className="text-xs sm:text-sm text-blue-200">Spigot DL</p>
+                <p className="font-semibold text-sm sm:text-base">{(version.spigotDownloads || 0).toLocaleString()}</p>
+              </div>
+              <div className="bg-white/10 rounded p-2 sm:p-3 text-center">
+                <p className="text-xs sm:text-sm text-blue-200">Total</p>
+                <p className="font-semibold text-sm sm:text-base">{(version.downloads + (version.spigotDownloads || 0)).toLocaleString()}</p>
+              </div>
+            </div>
+
             <p className="text-xs text-blue-100 pt-2">
-              Both platforms are supported. Download from your preferred source.
+              Available on Modrinth, Hangar, and Spigot. Download from your preferred source.
             </p>
           </div>
         ) : null}

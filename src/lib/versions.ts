@@ -34,11 +34,14 @@ export interface VersionInfo {
   downloadUrl: string;
   modrinthUrl: string;
   hangarUrl: string;
+  spigotUrl: string;
   downloads: number;
+  spigotDownloads?: number;
 }
 
 const MODRINTH_VERSION_API = "https://api.modrinth.com/v2/project/advanceddeliverydrones/version?include_changelog=false";
 const PROJECT_SLUG = "advanceddeliverydrones";
+const SPIGOT_RESOURCE_API = "https://api.spiget.org/v2/resources/135544";
 
 /**
  * Holt die neueste Version dynamisch aus der Modrinth API.
@@ -69,13 +72,33 @@ export async function fetchLatestVersion(): Promise<VersionInfo | null> {
     // Fallback falls date_published fehlt, um den RangeError zu verhindern
     const rawDate = latest.date_published || new Date().toISOString();
 
+    // Fetch Spigot data
+    let spigotDownloads = 0;
+    try {
+      const spigotResponse = await fetch(SPIGOT_RESOURCE_API, {
+        mode: "cors",
+        headers: {
+          Accept: "application/json",
+          "User-Agent": "AdvancedDeliveryDrones-Website/1.0",
+        },
+      });
+      if (spigotResponse.ok) {
+        const spigotData = await spigotResponse.json();
+        spigotDownloads = spigotData.downloads || 0;
+      }
+    } catch (error) {
+      console.warn("Error fetching Spigot data:", error);
+    }
+
     return {
       latestVersion: latest.version_number,
       releaseDate: new Date(rawDate).toISOString().split("T")[0],
       downloadUrl: downloadFile?.url || latest.files[0]?.url || `https://modrinth.com/plugin/${PROJECT_SLUG}/versions`,
       modrinthUrl: `https://modrinth.com/plugin/${PROJECT_SLUG}`,
       hangarUrl: "https://hangar.papermc.io/Baumkrieger69/AdvancedDeliveryDrones",
-      downloads: latest.downloads,
+      spigotUrl: "https://www.spigotmc.org/resources/advanced-delivery-drones.135544/",
+      downloads: latest.downloads + spigotDownloads,
+      spigotDownloads,
     };
   } catch (error) {
     console.error("Error fetching Modrinth versions:", error);
@@ -108,6 +131,7 @@ export async function getAllVersions(limit: number = 10): Promise<ModrinthVersio
 export interface DownloadStats {
   modrinth: number;
   hangar: number;
+  spigot: number;
   total: number;
 }
 
@@ -116,7 +140,7 @@ export interface DownloadStats {
  */
 export async function fetchDownloadStats(): Promise<DownloadStats | null> {
   try {
-    const [modrinthRes, hangarRes] = await Promise.all([
+    const [modrinthRes, hangarRes, spigotRes] = await Promise.all([
       fetch("https://api.modrinth.com/v2/project/advanceddeliverydrones", {
         mode: "cors",
         headers: {
@@ -134,10 +158,18 @@ export async function fetchDownloadStats(): Promise<DownloadStats | null> {
           },
         }
       ),
+      fetch(SPIGOT_RESOURCE_API, {
+        mode: "cors",
+        headers: {
+          Accept: "application/json",
+          "User-Agent": "AdvancedDeliveryDrones-Website/1.0",
+        },
+      }),
     ]);
 
     let modrinthDownloads = 0;
     let hangarDownloads = 0;
+    let spigotDownloads = 0;
 
     if (modrinthRes.ok) {
       const modrinthData = await modrinthRes.json();
@@ -149,10 +181,16 @@ export async function fetchDownloadStats(): Promise<DownloadStats | null> {
       hangarDownloads = hangarData.stats?.downloads || 0;
     }
 
+    if (spigotRes.ok) {
+      const spigotData = await spigotRes.json();
+      spigotDownloads = spigotData.downloads || 0;
+    }
+
     return {
       modrinth: modrinthDownloads,
       hangar: hangarDownloads,
-      total: modrinthDownloads + hangarDownloads,
+      spigot: spigotDownloads,
+      total: modrinthDownloads + hangarDownloads + spigotDownloads,
     };
   } catch (error) {
     console.error("Error fetching download stats:", error);

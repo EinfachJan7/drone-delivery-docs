@@ -110,7 +110,7 @@ function StatsPage() {
               >
                 Modrinth
               </a>
-              , and{" "}
+              ,{" "}
               <a
                 href="https://hangar.papermc.io/Baumkrieger69/AdvancedDeliveryDrones"
                 className="text-foreground underline-offset-4 hover:underline"
@@ -118,6 +118,15 @@ function StatsPage() {
                 rel="noreferrer"
               >
                 Hangar
+              </a>
+              , and{" "}
+              <a
+                href="https://www.spigotmc.org/resources/advanced-delivery-drones.135544/"
+                className="text-foreground underline-offset-4 hover:underline"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Spigot
               </a>
               . Usage metrics update every couple of minutes.
             </p>
@@ -238,7 +247,7 @@ function StatsPage() {
         <p className="mt-2 text-sm text-muted-foreground">
           Total downloads across all distribution platforms.
         </p>
-        <div className="mt-6 grid gap-5 md:grid-cols-3">
+        <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           <div className="card-surface p-6">
             <div className="text-xs uppercase tracking-wider text-muted-foreground">Modrinth</div>
             <div className="mt-4 text-3xl font-bold tabular-nums">
@@ -265,6 +274,20 @@ function StatsPage() {
               className="mt-3 inline-flex text-sm text-blue-500 hover:underline"
             >
               View on Hangar →
+            </a>
+          </div>
+          <div className="card-surface p-6">
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">Spigot</div>
+            <div className="mt-4 text-3xl font-bold tabular-nums">
+              {downloads.isLoading ? "—" : (downloads.data?.spigot ?? 0).toLocaleString()}
+            </div>
+            <a
+              href="https://www.spigotmc.org/resources/advanced-delivery-drones.135544/"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 inline-flex text-sm text-blue-500 hover:underline"
+            >
+              View on Spigot →
             </a>
           </div>
           <div className="card-surface p-6">
