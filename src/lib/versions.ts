@@ -9,8 +9,8 @@ export interface ModrinthVersion {
   featured: boolean;
   status: string;
   requested_status: string;
-  date_published: string; // Korrigiert von 'published' zu 'date_published'
-  date_updated: string;    // Korrigiert von 'updated' zu 'date_updated'
+  date_published: string;
+  date_updated: string;
   files: Array<{
     filename: string;
     primary: boolean;
@@ -39,25 +39,49 @@ export interface VersionInfo {
   spigotDownloads?: number;
 }
 
+export interface DownloadStats {
+  modrinth: number;
+  hangar: number;
+  spigot: number;
+  total: number;
+}
+
 const MODRINTH_VERSION_API = "https://api.modrinth.com/v2/project/advanceddeliverydrones/version?include_changelog=false";
 const PROJECT_SLUG = "advanceddeliverydrones";
 const SPIGOT_RESOURCE_API = "https://api.spiget.org/v2/resources/135544";
+
+// 1. Standard-Optionen für APIs, die strikte Header erlauben (Modrinth, Hangar)
+const getStrictFetchOptions = () => ({
+  mode: "cors" as RequestMode,
+  cache: "no-store" as RequestCache,
+  headers: {
+    Accept: "application/json",
+    "User-Agent": "AdvancedDeliveryDrones-Website/1.0",
+    "Cache-Control": "no-cache, no-store, must-revalidate",
+    Pragma: "no-cache",
+    Expires: "0",
+  },
+});
+
+// 2. Lockere Optionen für Spiget (Keine Cache-Header, um CORS Preflight-Blockaden zu verhindern)
+const getLooseFetchOptions = () => ({
+  mode: "cors" as RequestMode,
+  headers: {
+    Accept: "application/json",
+    "User-Agent": "AdvancedDeliveryDrones-Website/1.0",
+  },
+});
 
 /**
  * Holt die neueste Version dynamisch aus der Modrinth API.
  */
 export async function fetchLatestVersion(): Promise<VersionInfo | null> {
   try {
-    const response = await fetch(MODRINTH_VERSION_API, {
-      mode: "cors",
-      headers: {
-        Accept: "application/json",
-        "User-Agent": "AdvancedDeliveryDrones-Website/1.0",
-      },
-    });
+    const modrinthUrl = `${MODRINTH_VERSION_API}&_t=${Date.now()}`;
+    const response = await fetch(modrinthUrl, getStrictFetchOptions());
 
     if (!response.ok) {
-      throw new Error(`API returned status code: ${response.status}`);
+      throw new Error(`Modrinth API returned status code: ${response.status}`);
     }
 
     const versions: ModrinthVersion[] = await response.json();
@@ -68,26 +92,18 @@ export async function fetchLatestVersion(): Promise<VersionInfo | null> {
 
     const latest = versions[0];
     const downloadFile = latest.files.find((f) => f.primary);
-
-    // Fallback falls date_published fehlt, um den RangeError zu verhindern
     const rawDate = latest.date_published || new Date().toISOString();
 
-    // Fetch Spigot data
     let spigotDownloads = 0;
     try {
-      const spigotResponse = await fetch(SPIGOT_RESOURCE_API, {
-        mode: "cors",
-        headers: {
-          Accept: "application/json",
-          "User-Agent": "AdvancedDeliveryDrones-Website/1.0",
-        },
-      });
+      const spigotUrl = `${SPIGOT_RESOURCE_API}?_t=${Date.now()}`;
+      const spigotResponse = await fetch(spigotUrl, getLooseFetchOptions());
       if (spigotResponse.ok) {
         const spigotData = await spigotResponse.json();
         spigotDownloads = spigotData.downloads || 0;
       }
     } catch (error) {
-      console.warn("Error fetching Spigot data:", error);
+      console.warn("Error fetching Spigot data in fetchLatestVersion:", error);
     }
 
     return {
@@ -106,15 +122,13 @@ export async function fetchLatestVersion(): Promise<VersionInfo | null> {
   }
 }
 
+/**
+ * Holt die Liste aller Versionen.
+ */
 export async function getAllVersions(limit: number = 10): Promise<ModrinthVersion[]> {
   try {
-    const response = await fetch(MODRINTH_VERSION_API, {
-      mode: "cors",
-      headers: {
-        Accept: "application/json",
-        "User-Agent": "AdvancedDeliveryDrones-Website/1.0",
-      },
-    });
+    const modrinthUrl = `${MODRINTH_VERSION_API}&_t=${Date.now()}`;
+    const response = await fetch(modrinthUrl, getStrictFetchOptions());
 
     if (!response.ok) {
       return [];
@@ -128,43 +142,17 @@ export async function getAllVersions(limit: number = 10): Promise<ModrinthVersio
   }
 }
 
-export interface DownloadStats {
-  modrinth: number;
-  hangar: number;
-  spigot: number;
-  total: number;
-}
-
 /**
- * Holt Download-Statistiken von Modrinth und Hangar
+ * Holt alle Download-Statistiken komplett live von Modrinth, Hangar und Spigot.
  */
 export async function fetchDownloadStats(): Promise<DownloadStats | null> {
   try {
+    const timestamp = Date.now();
+    
     const [modrinthRes, hangarRes, spigotRes] = await Promise.all([
-      fetch("https://api.modrinth.com/v2/project/advanceddeliverydrones", {
-        mode: "cors",
-        headers: {
-          Accept: "application/json",
-          "User-Agent": "AdvancedDeliveryDrones-Website/1.0",
-        },
-      }),
-      fetch(
-        "https://hangar.papermc.io/api/v1/projects/Baumkrieger69/AdvancedDeliveryDrones",
-        {
-          mode: "cors",
-          headers: {
-            Accept: "application/json",
-            "User-Agent": "AdvancedDeliveryDrones-Website/1.0",
-          },
-        }
-      ),
-      fetch(SPIGOT_RESOURCE_API, {
-        mode: "cors",
-        headers: {
-          Accept: "application/json",
-          "User-Agent": "AdvancedDeliveryDrones-Website/1.0",
-        },
-      }),
+      fetch(`https://api.modrinth.com/v2/project/advanceddeliverydrones?_t=${timestamp}`, getStrictFetchOptions()),
+      fetch(`https://hangar.papermc.io/api/v1/projects/Baumkrieger69/AdvancedDeliveryDrones?_t=${timestamp}`, getStrictFetchOptions()),
+      fetch(`${SPIGOT_RESOURCE_API}?_t=${timestamp}`, getLooseFetchOptions()),
     ]);
 
     let modrinthDownloads = 0;
