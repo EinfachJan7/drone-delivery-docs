@@ -104,3 +104,58 @@ export async function getAllVersions(limit: number = 10): Promise<ModrinthVersio
     return [];
   }
 }
+
+export interface DownloadStats {
+  modrinth: number;
+  hangar: number;
+  total: number;
+}
+
+/**
+ * Holt Download-Statistiken von Modrinth und Hangar
+ */
+export async function fetchDownloadStats(): Promise<DownloadStats | null> {
+  try {
+    const [modrinthRes, hangarRes] = await Promise.all([
+      fetch("https://api.modrinth.com/v2/project/advanceddeliverydrones", {
+        mode: "cors",
+        headers: {
+          Accept: "application/json",
+          "User-Agent": "AdvancedDeliveryDrones-Website/1.0",
+        },
+      }),
+      fetch(
+        "https://hangar.papermc.io/api/v1/projects/Baumkrieger69/AdvancedDeliveryDrones",
+        {
+          mode: "cors",
+          headers: {
+            Accept: "application/json",
+            "User-Agent": "AdvancedDeliveryDrones-Website/1.0",
+          },
+        }
+      ),
+    ]);
+
+    let modrinthDownloads = 0;
+    let hangarDownloads = 0;
+
+    if (modrinthRes.ok) {
+      const modrinthData = await modrinthRes.json();
+      modrinthDownloads = modrinthData.downloads || 0;
+    }
+
+    if (hangarRes.ok) {
+      const hangarData = await hangarRes.json();
+      hangarDownloads = hangarData.stats?.downloads || 0;
+    }
+
+    return {
+      modrinth: modrinthDownloads,
+      hangar: hangarDownloads,
+      total: modrinthDownloads + hangarDownloads,
+    };
+  } catch (error) {
+    console.error("Error fetching download stats:", error);
+    return null;
+  }
+}

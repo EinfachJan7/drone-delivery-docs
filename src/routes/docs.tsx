@@ -231,7 +231,7 @@ function DocsPage() {
             Physical drone deliveries for Paper servers
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
-            <a href="https://github.com/EinfachJan7/AdvancedDeliveryDrones/releases" target="_blank" rel="noreferrer" className="btn-brand h-10 text-sm">
+            <a href="https://modrinth.com/plugin/advanceddeliverydrones#download" target="_blank" rel="noreferrer" className="btn-brand h-10 text-sm">
               <Download className="h-4 w-4" /> Latest release
             </a>
             <a href="https://github.com/EinfachJan7/AdvancedDeliveryDrones" target="_blank" rel="noreferrer" className="btn-ghost h-10 text-sm">

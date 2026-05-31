@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/Layout";
 import { useQuery } from "@tanstack/react-query";
 import { fetchBstatsLatest, fetchBstatsBreakdowns } from "@/lib/bstats";
+import { fetchDownloadStats } from "@/lib/versions";
 import {
   Activity,
   Server,
@@ -9,6 +10,7 @@ import {
   ExternalLink,
   AlertTriangle,
   RefreshCw,
+  Download,
 } from "lucide-react";
 import {
   AreaChart,
@@ -71,38 +73,64 @@ function StatsPage() {
     staleTime: 1000 * 60 * 5,
   });
 
+  const downloads = useQuery({
+    queryKey: ["download-stats"],
+    queryFn: fetchDownloadStats,
+    staleTime: 1000 * 60 * 5,
+    refetchInterval: 1000 * 60 * 30,
+  });
+
   return (
     <SiteLayout>
       <section className="container-page py-16">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
             <span className="badge-soft">
-              <Activity className="h-3.5 w-3.5" /> Live bStats data
+              <Activity className="h-3.5 w-3.5" /> Live data
             </span>
             <h1 className="mt-4 text-3xl font-bold tracking-tight md:text-4xl">
               Plugin statistics
             </h1>
             <p className="mt-3 max-w-2xl text-muted-foreground">
-              Pulled directly from the public{" "}
+              Real-time data pulled from{" "}
               <a
                 href="https://bstats.org/plugin/bukkit/AdvancedDeliveryDrones"
                 className="text-foreground underline-offset-4 hover:underline"
                 target="_blank"
                 rel="noreferrer"
               >
-                bStats API
-              </a>{" "}
-              for Advanced Delivery Drones. Refreshes every couple of minutes.
+                bStats
+              </a>
+              ,{" "}
+              <a
+                href="https://modrinth.com/plugin/advanceddeliverydrones"
+                className="text-foreground underline-offset-4 hover:underline"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Modrinth
+              </a>
+              , and{" "}
+              <a
+                href="https://hangar.papermc.io/Baumkrieger69/AdvancedDeliveryDrones"
+                className="text-foreground underline-offset-4 hover:underline"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Hangar
+              </a>
+              . Usage metrics update every couple of minutes.
             </p>
           </div>
           <button
             onClick={() => {
               latest.refetch();
               breakdowns.refetch();
+              downloads.refetch();
             }}
             className="btn-ghost"
           >
-            <RefreshCw className={`h-4 w-4 ${latest.isFetching ? "animate-spin" : ""}`} />
+            <RefreshCw className={`h-4 w-4 ${latest.isFetching || downloads.isFetching ? "animate-spin" : ""}`} />
             Refresh
           </button>
         </div>
@@ -120,7 +148,7 @@ function StatsPage() {
         )}
 
         {/* KPIs */}
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           <Kpi
             icon={Server}
             label="Active servers"
@@ -132,6 +160,12 @@ function StatsPage() {
             label="Active players"
             value={latest.data?.players}
             loading={latest.isLoading}
+          />
+          <Kpi
+            icon={Download}
+            label="Total downloads"
+            value={downloads.data?.total}
+            loading={downloads.isLoading}
           />
           <a
             href="https://bstats.org/plugin/bukkit/AdvancedDeliveryDrones"
@@ -197,6 +231,51 @@ function StatsPage() {
             data={breakdowns.data?.osArch}
             loading={breakdowns.isLoading}
           />
+        </div>
+
+        {/* Download statistics */}
+        <h2 className="mt-14 text-2xl font-bold tracking-tight">Download statistics</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Total downloads across all distribution platforms.
+        </p>
+        <div className="mt-6 grid gap-5 md:grid-cols-3">
+          <div className="card-surface p-6">
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">Modrinth</div>
+            <div className="mt-4 text-3xl font-bold tabular-nums">
+              {downloads.isLoading ? "—" : (downloads.data?.modrinth ?? 0).toLocaleString()}
+            </div>
+            <a
+              href="https://modrinth.com/plugin/advanceddeliverydrones"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 inline-flex text-sm text-blue-500 hover:underline"
+            >
+              View on Modrinth →
+            </a>
+          </div>
+          <div className="card-surface p-6">
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">Hangar</div>
+            <div className="mt-4 text-3xl font-bold tabular-nums">
+              {downloads.isLoading ? "—" : (downloads.data?.hangar ?? 0).toLocaleString()}
+            </div>
+            <a
+              href="https://hangar.papermc.io/Baumkrieger69/AdvancedDeliveryDrones"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 inline-flex text-sm text-blue-500 hover:underline"
+            >
+              View on Hangar →
+            </a>
+          </div>
+          <div className="card-surface p-6">
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">Total</div>
+            <div className="mt-4 text-3xl font-bold tabular-nums">
+              {downloads.isLoading ? "—" : (downloads.data?.total ?? 0).toLocaleString()}
+            </div>
+            <div className="mt-3 text-sm text-muted-foreground">
+              All platforms combined
+            </div>
+          </div>
         </div>
       </section>
     </SiteLayout>
