@@ -4,13 +4,14 @@ export interface ModrinthVersion {
   id: string;
   name: string;
   version_number: string;
-  changelog: string;
-  downloads: number;
+  changelog: string | null;
+  downloads: string;
   featured: boolean;
   status: string;
   requested_status: string;
   date_published: string;
   date_updated: string;
+  published: string;
   files: Array<{
     filename: string;
     primary: boolean;
@@ -46,7 +47,7 @@ export interface DownloadStats {
   total: number;
 }
 
-const MODRINTH_VERSION_API = "https://api.modrinth.com/v2/project/advanceddeliverydrones/version?include_changelog=false";
+const MODRINTH_VERSION_API = "https://api.modrinth.com/v2/project/advanceddeliverydrones/version?include_changelog=true";
 const PROJECT_SLUG = "advanceddeliverydrones";
 const SPIGOT_RESOURCE_API = "https://api.spiget.org/v2/resources/135544";
 

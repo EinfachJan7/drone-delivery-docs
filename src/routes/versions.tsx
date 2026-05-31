@@ -109,9 +109,11 @@ function VersionCard({ version }: { version: ModrinthVersion }) {
   const [expanded, setExpanded] = useState(false);
   const primaryFile = version.files.find((f) => f.primary) || version.files[0];
   
+  const toggleExpanded = () => setExpanded(!expanded);
+  
   const publishDate = (() => {
     try {
-      const date = new Date(version.published);
+      const date = new Date(version.date_published);
       if (isNaN(date.getTime())) {
         return "Unknown date";
       }
@@ -129,6 +131,7 @@ function VersionCard({ version }: { version: ModrinthVersion }) {
     <div className="card-surface overflow-hidden p-6">
       <div
         className="flex cursor-pointer items-start justify-between gap-4"
+        onClick={toggleExpanded}
       >
         <div className="flex-1">
           <div className="flex items-center gap-3">
@@ -149,7 +152,7 @@ function VersionCard({ version }: { version: ModrinthVersion }) {
             </div>
             <div className="flex items-center gap-1.5">
               <Download className="h-4 w-4" />
-              {version.downloads.toLocaleString()} downloads
+              {parseInt(version.downloads).toLocaleString()} downloads
             </div>
             {primaryFile && (
               <div className="text-xs">
@@ -186,9 +189,12 @@ function VersionCard({ version }: { version: ModrinthVersion }) {
             </a>
           )}
           <button
-            onClick={() => setExpanded(!expanded)}
-            className="rounded-lg p-2 hover:bg-zinc-900"
-          >
+             onClick={(e) => {
+               e.stopPropagation();
+               toggleExpanded();
+             }}
+             className="rounded-lg p-2 hover:bg-zinc-900"
+           >
             <ChevronDown
               className={`h-5 w-5 transition-transform ${expanded ? "rotate-180" : ""}`}
             />
@@ -201,7 +207,7 @@ function VersionCard({ version }: { version: ModrinthVersion }) {
           {version.changelog && (
             <div>
               <h4 className="text-sm font-semibold">Changelog</h4>
-              <div className="mt-2 rounded-lg bg-zinc-950 p-4 text-sm leading-relaxed text-muted-foreground prose prose-invert prose-sm">
+              <div className="mt-2 rounded-lg bg-zinc-900/50 p-4 text-sm leading-relaxed text-muted-foreground prose prose-invert prose-sm">
                 <ReactMarkdown
                   components={{
                     a: ({ node, ...props }) => (
