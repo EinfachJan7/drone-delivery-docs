@@ -25,6 +25,7 @@ const tabs = [
   { id: "commands", label: "Commands", icon: Terminal },
   { id: "permissions", label: "Permissions", icon: Shield },
   { id: "configuration", label: "Configuration", icon: Settings2 },
+  { id: "gui", label: "GUI", icon: Settings2 },
   { id: "placeholders", label: "PlaceholderAPI", icon: Code2 },
 ];
 
@@ -50,7 +51,7 @@ const features = [
     desc: "Global delivery points (max 3/player) with UUID trust lists &amp; per-socket blacklists.",
   },
   {
-    icon: Shield,
+    icon: Settings2,
     title: "Blacklist & Controls",
     desc: "UUID-based player blocking, toggle receiving, decline drones, send cooldowns.",
   },
@@ -58,6 +59,16 @@ const features = [
     icon: Zap,
     title: "Performance & Optimization",
     desc: "Chunk-loading cooldown, batch processing, throttled particles, cached flight paths.",
+  },
+  {
+    icon: Settings2,
+    title: "In-Game Config Editor",
+    desc: "Edit all configuration values directly in-game using the /drone config GUI.",
+  },
+  {
+    icon: Settings2,
+    title: "Database Storage",
+    desc: "Store active drones in MySQL or YAML. Seamlessly convert between them with /drone convert.",
   },
 ];
 
@@ -104,6 +115,8 @@ const commandGroups = [
       { cmd: "/drone admin send <x> <y> <z> [world]", desc: "Admin sends drone to coordinates. Bypasses all checks.", perm: "drone.admin.send" },
       { cmd: "/drone list", desc: "List all active drones with status, senders, receivers &amp; teleport links.", perm: "drone.admin.list" },
       { cmd: "/drone reload", desc: "Reload config, GUI &amp; language files. No server restart.", perm: "drone.admin.reload" },
+      { cmd: "/drone config", desc: "Open the in-game configuration editor GUI.", perm: "drone.admin.config" },
+      { cmd: "/drone convert <yaml-to-mysql|mysql-to-yaml>", desc: "Convert data between YAML and MySQL storage.", perm: "drone.admin.convert" },
     ],
   },
 ];
@@ -125,12 +138,22 @@ const permissions = [
   { node: "drone.admin.send", desc: "Send drones to arbitrary coordinates as admin. Receiver is always the sender (admin). Bypasses permission &amp; cooldown checks. Useful for server events &amp; testing.", def: "OP" },
   { node: "drone.admin.list", desc: "List all active drones server-wide with teleport links. Shows flying &amp; landed drones. Real-time updates.", def: "OP" },
   { node: "drone.admin.reload", desc: "Reload all config, GUI, &amp; language files without restarting server. Active drones unaffected. New configs apply to subsequent drones.", def: "OP" },
+  { node: "drone.admin.config", desc: "Access the in-game config editor.", def: "OP" },
+  { node: "drone.admin.convert", desc: "Allows conversion between YAML and MySQL databases.", def: "OP" },
+  { node: "drone.admin.update-notify", desc: "Receive notifications about plugin updates on join.", def: "OP" },
+  { node: "drone.send.max.*", desc: "Allows N concurrent outgoing drones, overriding the max-active-per-sender config.", def: "false" },
+  { node: "drone.leashed.max.*", desc: "Allows N leashed animals per drone, overriding the max-leashed-animals-per-drone config.", def: "false" },
+  { node: "drone.sockets.max.*", desc: "Allows N delivery sockets per player, overriding max-sockets-per-player config.", def: "false" },
 ];
 
 const configKeys = [
+  { key: "plugin.check-updates", desc: "Check for updates on Modrinth on startup." },
+  { key: "plugin.config-editor-messages-enabled", desc: "Show notifications when config settings are changed in the editor." },
+  { key: "database.type", desc: "Storage type for active Drones: YAML or MYSQL. (Sockets, blacklists, player settings are always YAML)" },
   { key: "language", desc: "Locale for all messages (de_DE, en_EN, es_ES, fr_FR, ru_RU, zh_CN). Live reload with /drone reload. Separate language file per locale with MiniMessage formatting." },
   { key: "players-enabled", desc: "Enable/disable all player-to-player drone deliveries. When false, /drone send is unavailable. Sockets remain functional if sockets-enabled is true." },
   { key: "sockets-enabled", desc: "Enable/disable entire socket system. When false, all socket commands are blocked. Player-to-player remains available if players-enabled is true." },
+  { key: "settings.drone.socket-name-validation.use-allowed-list", desc: "If true, ONLY allowed characters can be used for sockets. If false, ANY character EXCEPT prohibited ones." },
   { key: "settings.drone.speed", desc: "Cruise flight speed in blocks per tick. Default 0.3 b/t (typical flight ~30 blocks/second). Higher values = faster drones but more lag." },
   { key: "settings.drone.startup-speed", desc: "Speed during initial startup phase in blocks per tick. Default 0.2 b/t. Slower than cruise for smooth launch. Uses cubic ease-in-out easing." },
   { key: "settings.drone.startup-seconds", desc: "Duration of startup phase in seconds. Default 3s. Phase ends before cruise begins. Launch animation plays concurrently." },
@@ -154,16 +177,27 @@ const configKeys = [
   { key: "settings.drone.allow-send-to-self-socket", desc: "Allow player to send drone to their own sockets. When false, socket send to self blocked." },
   { key: "settings.drone.blocked-worlds", desc: "YAML list of world names where drone sends are forbidden (case-insensitive). Example: [nether, end, pvp_zone]." },
   { key: "launch-animation.enabled", desc: "Enable 3-second launch animation (rise + spin). When disabled, drone starts flying immediately without visual effect." },
-  { key: "launch-animation.duration-ticks", desc: "Duration of launch animation in ticks (20 ticks = 1 second). Overrides startup-seconds for animation only." },
-  { key: "hologram.enabled", desc: "Show hologram above landed drones with recipient name. When disabled, no name tag visible above drone." },
-  { key: "hologram.show-despawn-countdown", desc: "Display countdown timer in hologram (e.g., 'Expires in 5:30'). Updates every second when enabled." },
-  { key: "bossbar.enabled", desc: "Show boss bar to receiver during drone flight. When disabled, no progress bar shown." },
-  { key: "bossbar.show-distance-and-eta", desc: "Show distance &amp; ETA in boss bar title. When disabled, only 'Incoming Drone' shown." },
-  { key: "locate-particles.enabled", desc: "Enable particle trail for /drone locate command. When disabled, command still works but no visual effect." },
-  { key: "collection-animation.enabled", desc: "Enable 2-second collection animation when receiver picks up drone. Drone rises 3 blocks with particles &amp; sound. When disabled, instant pickup." },
-  { key: "container-integration.enabled", desc: "Enable auto-unload into nearby containers (chests, hoppers, etc.). When disabled, drone must be manually picked up." },
-  { key: "container-integration.search-radius", desc: "Search radius in blocks for auto-unload. Default 0 = exact location only. Radius &gt; 0 triggers spiral search &amp; fine-pass coarse optimization." },
-  { key: "discord.enabled", desc: "Enable Discord webhook notifications for drone events (sent, delivered, declined, etc.). Requires valid webhook URL in config." },
+  { key: "database.mysql.*", desc: "MySQL connection details (host, port, database, username, password, table-prefix)." },
+  { key: "settings.drone.skull-texture", desc: "Base64 texture string for the default drone player head." },
+  { key: "settings.drone.socket-name-validation.allowed-characters", desc: "String of allowed characters if use-allowed-list is true." },
+  { key: "settings.drone.socket-name-validation.prohibited-characters", desc: "String of forbidden characters if use-allowed-list is false." },
+  { key: "settings.drone.locate-particles.particle", desc: "The Bukkit Particle type used for /drone locate (e.g. HAPPY_VILLAGER)." },
+  { key: "settings.drone.container-integration.blacklist", desc: "List of container materials to ignore for auto-unload (e.g. TRAPPED_CHEST)." },
+  { key: "settings.drone.particle-types", desc: "List of particle effects for the drone flight trail (e.g. ELECTRIC_SPARK or DUST:255,0,0:1.0)." },
+  { key: "settings.drone.particle-count", desc: "Number of particles spawned per tick." },
+  { key: "settings.drone.particle-trail-length", desc: "Length of the drone flight particle trail." },
+  { key: "settings.drone.particle-y-offset", desc: "Vertical offset for the flight particles." },
+  { key: "settings.drone.flight-sound", desc: "Sound played continuously during flight (e.g. entity.elytra.flying)." },
+  { key: "settings.drone.hologram.offset-y", desc: "Vertical offset for the landed drone hologram." },
+  { key: "settings.drone.hologram.format", desc: "MiniMessage format string for the player delivery hologram." },
+  { key: "settings.drone.hologram.format-socket", desc: "MiniMessage format string for the socket delivery hologram." },
+  { key: "settings.drone.bossbar.format", desc: "Bossbar text format (supports placeholders)." },
+  { key: "settings.drone.bossbar.format-socket", desc: "Bossbar text format for socket deliveries." },
+  { key: "settings.drone.bossbar.color", desc: "Color of the Bossbar (PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE)." },
+  { key: "settings.drone.launch-animation.sound", desc: "Sound effect played upon drone launch." },
+  { key: "settings.drone.launch-animation.sound-volume", desc: "Volume of the launch sound effect." },
+  { key: "launch-animation.seconds", desc: "Duration of launch animation in seconds. Overrides startup-seconds for animation only." },
+  { key: "discord.*", desc: "Detailed discord webhook settings (username, avatar, embed colors, item/animal display limits)." },
   { key: "custom-model.provider", desc: "Drone model provider: NONE (default player skull), NEXO, ORAXEN, or ITEMSADDER. Requires plugin installed if not NONE." },
   { key: "custom-model.item-id", desc: "Item ID for custom drone model when provider is not NONE. Example: 'nexo:custom_drone'. Must exist in provider plugin." },
   { key: "glowing-enabled", desc: "Enable entity outline glow effect on drone (makes it glow through walls). When disabled, drone is not outlined." },
@@ -451,6 +485,71 @@ function DocsPage() {
             </div>
           )}
 
+          {/* GUI Configuration */}
+          {activeTab === "gui" && (
+            <div>
+              <h2 className="mb-4 sm:mb-6 text-2xl sm:text-3xl font-bold">GUI Configuration</h2>
+              <p className="mb-4 sm:mb-6 text-xs sm:text-sm text-muted-foreground">Every inventory menu in the plugin is fully customizable via <code className="code-inline">gui.yml</code>. You can change titles, sizes, and any item layout. Supports MiniMessage formatting.</p>
+              
+              <div className="space-y-6">
+                <div className="card-surface p-4 sm:p-6">
+                  <h3 className="text-lg font-semibold mb-3">Global Settings</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    The <code className="code-inline">global</code> section defines the default filler items and back button used across all menus.
+                  </p>
+                  <pre className="p-3 bg-black/40 rounded-md overflow-x-auto text-xs"><code>{`global:
+  fill-item:
+    material: "GRAY_STAINED_GLASS_PANE"
+    name: " "
+  back-item:
+    material: "ARROW"
+    name: "<!italic><yellow>⟵ ʙᴀᴄᴋ</yellow>"
+    lore:
+      - "<!italic><gray>  Zurück"`}</code></pre>
+                </div>
+
+                <div className="card-surface p-4 sm:p-6">
+                  <h3 className="text-lg font-semibold mb-3">Menu Customization</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Each menu (like <code className="code-inline">main-menu</code>, <code className="code-inline">socket-management</code>, etc.) has its own section where you can define:
+                  </p>
+                  <ul className="list-disc list-inside text-sm text-muted-foreground mb-4 space-y-1">
+                    <li><code className="code-inline">title</code>: The inventory title (supports MiniMessage).</li>
+                    <li><code className="code-inline">size</code>: Number of slots (must be multiple of 9).</li>
+                    <li><code className="code-inline">items</code>: The exact positions, materials, names, and lores of interactive items.</li>
+                  </ul>
+                  <pre className="p-3 bg-black/40 rounded-md overflow-x-auto text-xs"><code>{`main-menu:
+  title: "<!italic><gold>ᴅʀᴏɴᴇ ᴍᴇɴᴜ</gold>"
+  size: 54
+  items:
+    send:
+      position: 20
+      material: "PLAYER_HEAD"
+      name: "<!italic><green><bold>✈ sᴇɴᴅ ᴅʀᴏɴᴇ</bold></green>"
+      lore:
+        - "<!italic><gray>  sᴇɴᴅ ᴀ ᴅʀᴏɴᴇ ᴛᴏ"`}</code></pre>
+                </div>
+
+                <div className="card-surface p-4 sm:p-6">
+                  <h3 className="text-lg font-semibold mb-3">Custom Skull Textures</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Any item can use a custom player head by setting <code className="code-inline">material: "PLAYER_HEAD"</code> and providing a Base64 <code className="code-inline">value</code>.
+                  </p>
+                  <pre className="p-3 bg-black/40 rounded-md overflow-x-auto text-xs"><code>{`send:
+  material: "PLAYER_HEAD"
+  value: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly..."`}</code></pre>
+                </div>
+                
+                <div className="card-surface p-4 sm:p-6">
+                  <h3 className="text-lg font-semibold mb-3">Dynamic Data Injection</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Many GUIs (like Player Selection or Socket Selection) use template items (e.g., <code className="code-inline">player-head-item</code> or <code className="code-inline">socket-item-format</code>) that define how dynamic entries are displayed. You can use placeholders like <code className="code-inline">&lt;player&gt;</code>, <code className="code-inline">&lt;name&gt;</code>, or <code className="code-inline">&lt;owner&gt;</code> directly in these formats.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* PlaceholderAPI */}
           {activeTab === "placeholders" && (
             <div>
@@ -589,11 +688,55 @@ function DocsPage() {
                     </tr>
                     <tr>
                       <td><code className="code-inline text-xs">item_count / items</code></td>
-                      <td className="text-muted-foreground text-sm">Filled inventory slots</td>
+                      <td className="text-muted-foreground text-sm">Total number of unique item stacks</td>
                     </tr>
                     <tr>
                       <td><code className="code-inline text-xs">animal_count / animals</code></td>
-                      <td className="text-muted-foreground text-sm">Animals in transit</td>
+                      <td className="text-muted-foreground text-sm">Total number of animals</td>
+                    </tr>
+                    <tr>
+                      <td><code className="code-inline text-xs">has_items</code></td>
+                      <td className="text-muted-foreground text-sm">Returns true if the drone contains any items</td>
+                    </tr>
+                    <tr>
+                      <td><code className="code-inline text-xs">has_animals</code></td>
+                      <td className="text-muted-foreground text-sm">Returns true if the drone contains any animals</td>
+                    </tr>
+                    <tr>
+                      <td><code className="code-inline text-xs">items_summary</code></td>
+                      <td className="text-muted-foreground text-sm">Grouped item overview (e.g., 3x Diamond, 10x Iron Ingot)</td>
+                    </tr>
+                    <tr>
+                      <td><code className="code-inline text-xs">items_list</code></td>
+                      <td className="text-muted-foreground text-sm">Slot-by-slot item list</td>
+                    </tr>
+                    <tr>
+                      <td><code className="code-inline text-xs">items_total</code></td>
+                      <td className="text-muted-foreground text-sm">Total count of all items combined</td>
+                    </tr>
+                    <tr>
+                      <td><code className="code-inline text-xs">animals_summary</code></td>
+                      <td className="text-muted-foreground text-sm">Grouped animal overview (e.g., 2x Cow, 1x Pig)</td>
+                    </tr>
+                    <tr>
+                      <td><code className="code-inline text-xs">animals_list</code></td>
+                      <td className="text-muted-foreground text-sm">Full list of animals (e.g., Cow, Pig, Cow)</td>
+                    </tr>
+                    <tr>
+                      <td><code className="code-inline text-xs">contents_summary</code></td>
+                      <td className="text-muted-foreground text-sm">Combined items and animals summary</td>
+                    </tr>
+                    <tr>
+                      <td><code className="code-inline text-xs">item_1_name</code></td>
+                      <td className="text-muted-foreground text-sm">Name of the first item (index dynamically)</td>
+                    </tr>
+                    <tr>
+                      <td><code className="code-inline text-xs">item_1_amount</code></td>
+                      <td className="text-muted-foreground text-sm">Amount of the first item (index dynamically)</td>
+                    </tr>
+                    <tr>
+                      <td><code className="code-inline text-xs">animal_1_name</code></td>
+                      <td className="text-muted-foreground text-sm">Name of the first animal (index dynamically)</td>
                     </tr>
                     <tr>
                       <td><code className="code-inline text-xs">despawn_seconds / despawn_remaining</code></td>

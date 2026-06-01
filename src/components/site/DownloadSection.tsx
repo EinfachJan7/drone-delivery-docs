@@ -1,7 +1,26 @@
 import { useEffect, useState } from "react";
-import { Download, ExternalLink, Loader } from "lucide-react";
+import { Download, ExternalLink, Loader, CheckCircle, Server, Gamepad2 } from "lucide-react";
 import type { VersionInfo } from "@/lib/versions";
 import { fetchLatestVersion } from "@/lib/versions";
+
+// System Requirements
+const SYSTEM_REQUIREMENTS = {
+  java: "Java 17+",
+  server: "Paper/Spigot 1.20.1+",
+  ram: "512 MB (recommended 1 GB+)",
+};
+
+// Supported Minecraft Versions
+const SUPPORTED_VERSIONS = [
+  "1.20.5",
+  "1.20.4",
+  "1.20.3",
+  "1.20.2",
+  "1.20.1",
+  "1.20",
+  "1.19.3",
+  "1.19.2",
+];
 
 export function DownloadSection() {
   const [version, setVersion] = useState<VersionInfo | null>(null);
@@ -96,6 +115,59 @@ export function DownloadSection() {
             <p className="text-xs text-blue-100 pt-2">
               Available on Modrinth, Hangar, and Spigot. Download from your preferred source.
             </p>
+
+            {/* System Requirements Section */}
+            <div className="bg-white/10 rounded-lg p-4 sm:p-5 mt-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Server size={18} className="text-yellow-300" />
+                <h3 className="text-lg font-semibold">System Requirements</h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="bg-white/5 rounded p-3">
+                  <p className="text-xs text-blue-200 mb-1">Java Version</p>
+                  <p className="font-semibold text-sm flex items-center gap-1">
+                    <CheckCircle size={14} className="text-green-400" />
+                    {SYSTEM_REQUIREMENTS.java}
+                  </p>
+                </div>
+                <div className="bg-white/5 rounded p-3">
+                  <p className="text-xs text-blue-200 mb-1">Server Type</p>
+                  <p className="font-semibold text-sm flex items-center gap-1">
+                    <CheckCircle size={14} className="text-green-400" />
+                    {SYSTEM_REQUIREMENTS.server}
+                  </p>
+                </div>
+                <div className="bg-white/5 rounded p-3">
+                  <p className="text-xs text-blue-200 mb-1">Recommended RAM</p>
+                  <p className="font-semibold text-sm flex items-center gap-1">
+                    <CheckCircle size={14} className="text-green-400" />
+                    {SYSTEM_REQUIREMENTS.ram}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Supported Minecraft Versions */}
+            <div className="bg-white/10 rounded-lg p-4 sm:p-5 mt-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Gamepad2 size={18} className="text-green-300" />
+                <h3 className="text-lg font-semibold">Supported Minecraft Versions</h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {SUPPORTED_VERSIONS.map((ver) => (
+                  <span
+                    key={ver}
+                    className="inline-flex items-center gap-1 bg-white/20 hover:bg-white/30 transition px-3 py-1 rounded-full text-xs font-medium"
+                  >
+                    <span className="w-1.5 h-1.5 bg-green-400 rounded-full"></span>
+                    {ver}
+                  </span>
+                ))}
+              </div>
+              <p className="text-xs text-blue-100 mt-3">
+                Additional versions may be supported. Check Modrinth for the latest compatibility list.
+              </p>
+            </div>
           </div>
         ) : null}
       </div>
