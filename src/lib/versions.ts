@@ -132,8 +132,8 @@ export async function getAllVersions(limit: number = 10): Promise<ModrinthVersio
     
     const [modrinthRes, hangarRes, spigotRes] = await Promise.all([
       fetch(modrinthUrl, getStrictFetchOptions()),
-      fetch(`https://hangar.papermc.io/api/v1/projects/Baumkrieger69/AdvancedDeliveryDrones/versions?limit=100&_t=${timestamp}`, getStrictFetchOptions()),
-      fetch(`${SPIGOT_RESOURCE_API}/versions?size=100&sort=-releaseDate&_t=${timestamp}`, getLooseFetchOptions()),
+      fetch(`https://hangar.papermc.io/api/v1/projects/Baumkrieger69/AdvancedDeliveryDrones/versions?limit=100`, getStrictFetchOptions()),
+      fetch(`${SPIGOT_RESOURCE_API}/versions?size=100&sort=-releaseDate`, getLooseFetchOptions()),
     ]);
 
     if (!modrinthRes.ok) {
