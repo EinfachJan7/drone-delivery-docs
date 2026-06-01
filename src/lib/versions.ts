@@ -27,6 +27,8 @@ export interface ModrinthVersion {
   dependencies: string[];
   loaders: string[];
   game_versions: string[];
+  hangar_downloads?: number;
+  spigot_downloads?: number;
 }
 
 export interface VersionInfo {
@@ -123,22 +125,57 @@ export async function fetchLatestVersion(): Promise<VersionInfo | null> {
   }
 }
 
-/**
- * Holt die Liste aller Versionen.
- */
 export async function getAllVersions(limit: number = 10): Promise<ModrinthVersion[]> {
   try {
-    const modrinthUrl = `${MODRINTH_VERSION_API}&_t=${Date.now()}`;
-    const response = await fetch(modrinthUrl, getStrictFetchOptions());
+    const timestamp = Date.now();
+    const modrinthUrl = `${MODRINTH_VERSION_API}&_t=${timestamp}`;
+    
+    const [modrinthRes, hangarRes, spigotRes] = await Promise.all([
+      fetch(modrinthUrl, getStrictFetchOptions()),
+      fetch(`https://hangar.papermc.io/api/v1/projects/Baumkrieger69/AdvancedDeliveryDrones/versions?limit=100&_t=${timestamp}`, getStrictFetchOptions()),
+      fetch(`${SPIGOT_RESOURCE_API}/versions?size=100&sort=-releaseDate&_t=${timestamp}`, getLooseFetchOptions()),
+    ]);
 
-    if (!response.ok) {
+    if (!modrinthRes.ok) {
       return [];
     }
 
-    const versions: ModrinthVersion[] = await response.json();
-    return versions.slice(0, limit);
+    const versions: ModrinthVersion[] = await modrinthRes.json();
+    let hangarVersions: any[] = [];
+    let spigotVersions: any[] = [];
+
+    if (hangarRes.ok) {
+      try {
+        const hangarData = await hangarRes.json();
+        hangarVersions = hangarData.result || [];
+      } catch (e) {
+        console.warn("Failed to parse hangar versions");
+      }
+    }
+
+    if (spigotRes.ok) {
+      try {
+        spigotVersions = await spigotRes.json();
+      } catch (e) {
+        console.warn("Failed to parse spigot versions");
+      }
+    }
+
+    const enrichedVersions = versions.map((v) => {
+      const versionNumber = v.version_number;
+      const hangarMatch = hangarVersions.find((hv: any) => hv.name === versionNumber);
+      const spigotMatch = spigotVersions.find((sv: any) => sv.name === versionNumber);
+
+      return {
+        ...v,
+        hangar_downloads: hangarMatch ? hangarMatch.stats?.totalDownloads || 0 : 0,
+        spigot_downloads: spigotMatch ? spigotMatch.downloads || 0 : 0,
+      };
+    });
+
+    return enrichedVersions.slice(0, limit);
   } catch (error) {
-    console.error("Error fetching Modrinth versions list:", error);
+    console.error("Error fetching versions list:", error);
     return [];
   }
 }

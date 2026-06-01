@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/Layout";
+import { useEffect } from "react";
+import confetti from "canvas-confetti";
 import {
   Rocket,
   Boxes,
@@ -20,7 +22,7 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchBstatsLatest } from "@/lib/bstats";
-import { fetchLatestVersion } from "@/lib/versions";
+import { fetchLatestVersion, fetchDownloadStats } from "@/lib/versions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -105,6 +107,50 @@ function Home() {
     staleTime: 1000 * 60 * 60, // cache for 1 hour
   });
 
+  const allDownloads = useQuery({
+    queryKey: ["downloads-total"],
+    queryFn: fetchDownloadStats,
+    staleTime: 1000 * 60 * 60,
+  });
+
+  const downloads = allDownloads.data?.total || 0;
+  const milestone = Math.floor(downloads / 100) * 100;
+  const isMilestone = milestone >= 100 && (downloads - milestone) <= 10;
+
+  useEffect(() => {
+    if (!isMilestone) return;
+
+    let animationFrameId: number;
+    // Muted, non-neon blue colors
+    const colors = ['#4682b4', '#5f9ea0', '#87ceeb', '#87cefa', '#b0c4de', '#add8e6'];
+
+    const frame = () => {
+      confetti({
+        particleCount: 2,
+        startVelocity: 0,
+        ticks: 300,
+        gravity: 0.3,
+        origin: {
+          x: Math.random(),
+          y: Math.random() * 0.2 - 0.2
+        },
+        colors: colors,
+        shapes: ['circle'],
+        scalar: Math.random() * 0.6 + 0.4,
+        zIndex: 9999,
+        disableForReducedMotion: true
+      });
+
+      animationFrameId = requestAnimationFrame(frame);
+    };
+
+    frame();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [isMilestone]);
+
   return (
     <SiteLayout>
       {/* Hero */}
@@ -116,6 +162,18 @@ function Home() {
         />
         <div className="container-page py-24 md:py-32">
           <div className="mx-auto max-w-3xl text-center">
+            {isMilestone && (
+              <div className="mb-8 animate-in fade-in slide-in-from-top-4 duration-1000">
+                <div className="card-surface mx-auto inline-flex items-center gap-3 border border-[var(--color-border)] px-6 py-3 shadow-sm transition-all">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--color-accent)]">
+                    <Rocket className="h-4 w-4 text-foreground" />
+                  </div>
+                  <span className="text-sm font-medium tracking-wide text-foreground">
+                    Thank you for <span className="font-bold">{milestone}</span> downloads!
+                  </span>
+                </div>
+              </div>
+            )}
             <span className="badge-soft">
               <Sparkles className="h-3.5 w-3.5" /> Version {version.data?.latestVersion || "1.0.7"} · Paper 1.20+
             </span>

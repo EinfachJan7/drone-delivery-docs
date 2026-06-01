@@ -150,9 +150,19 @@ function VersionCard({ version }: { version: ModrinthVersion }) {
               <Calendar className="h-4 w-4" />
               {publishDate}
             </div>
-            <div className="flex items-center gap-1.5">
-              <Download className="h-4 w-4" />
-              {parseInt(version.downloads).toLocaleString()} downloads
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 rounded-md bg-zinc-900/80 px-2 py-1 text-xs font-medium text-emerald-400" title="Modrinth Downloads">
+                <Download className="h-3.5 w-3.5" />
+                {parseInt(version.downloads).toLocaleString()}
+              </div>
+              <div className="flex items-center gap-1.5 rounded-md bg-zinc-900/80 px-2 py-1 text-xs font-medium text-sky-400" title="Hangar Downloads">
+                <Download className="h-3.5 w-3.5" />
+                {(version.hangar_downloads || 0).toLocaleString()}
+              </div>
+              <div className="flex items-center gap-1.5 rounded-md bg-zinc-900/80 px-2 py-1 text-xs font-medium text-orange-400" title="Spigot Downloads">
+                <Download className="h-3.5 w-3.5" />
+                {(version.spigot_downloads || 0).toLocaleString()}
+              </div>
             </div>
             {primaryFile && (
               <div className="text-xs">
