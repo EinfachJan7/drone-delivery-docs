@@ -200,7 +200,7 @@ export async function fetchDownloadStats(): Promise<DownloadStats | null> {
     const [modrinthRes, hangarRes, spigotRes] = await Promise.allSettled([
       fetchWithTimeout(`https://api.modrinth.com/v2/project/advanceddeliverydrones?_t=${timestamp}`, getStrictFetchOptions(), 10000),
       fetchWithTimeout(`https://hangar.papermc.io/api/v1/projects/Baumkrieger69/AdvancedDeliveryDrones?_t=${timestamp}`, getStrictFetchOptions(), 10000),
-      fetchWithTimeout(`${SPIGOT_RESOURCE_API}?_t=${timestamp}`, getLooseFetchOptions(), 10000),
+      fetchWithTimeout(`${SPIGOT_RESOURCE_API}?_t=${timestamp}`, getLooseFetchOptions(), 15000), // Longer timeout for Spigot on mobile
     ]);
 
     let modrinthDownloads = 0;
@@ -211,36 +211,46 @@ export async function fetchDownloadStats(): Promise<DownloadStats | null> {
       try {
         const modrinthData = await modrinthRes.value.json();
         modrinthDownloads = modrinthData.downloads || 0;
+        console.log("✓ Modrinth downloads:", modrinthDownloads);
       } catch (e) {
         console.warn("Error parsing Modrinth response:", e);
       }
     } else if (modrinthRes.status === 'rejected') {
       console.warn("Modrinth fetch failed:", modrinthRes.reason);
+    } else if (modrinthRes.status === 'fulfilled' && !modrinthRes.value.ok) {
+      console.warn("Modrinth API returned status:", modrinthRes.value.status);
     }
 
     if (hangarRes.status === 'fulfilled' && hangarRes.value.ok) {
       try {
         const hangarData = await hangarRes.value.json();
         hangarDownloads = hangarData.stats?.downloads || 0;
+        console.log("✓ Hangar downloads:", hangarDownloads);
       } catch (e) {
         console.warn("Error parsing Hangar response:", e);
       }
     } else if (hangarRes.status === 'rejected') {
       console.warn("Hangar fetch failed:", hangarRes.reason);
+    } else if (hangarRes.status === 'fulfilled' && !hangarRes.value.ok) {
+      console.warn("Hangar API returned status:", hangarRes.value.status);
     }
 
     if (spigotRes.status === 'fulfilled' && spigotRes.value.ok) {
       try {
         const spigotData = await spigotRes.value.json();
         spigotDownloads = spigotData.downloads || 0;
+        console.log("✓ Spigot downloads:", spigotDownloads);
       } catch (e) {
         console.warn("Error parsing Spigot response:", e);
       }
     } else if (spigotRes.status === 'rejected') {
       console.warn("Spigot fetch failed:", spigotRes.reason);
+    } else if (spigotRes.status === 'fulfilled' && !spigotRes.value.ok) {
+      console.warn("Spigot API returned status:", spigotRes.value.status);
     }
 
     const total = modrinthDownloads + hangarDownloads + spigotDownloads;
+    console.log("Download stats summary:", { modrinth: modrinthDownloads, hangar: hangarDownloads, spigot: spigotDownloads, total });
     
     return {
       modrinth: modrinthDownloads,

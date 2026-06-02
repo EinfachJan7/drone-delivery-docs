@@ -115,7 +115,19 @@ function Home() {
 
   const downloads = allDownloads.data?.total || 0;
   const milestone = Math.floor(downloads / 100) * 100;
-  const isMilestone = milestone >= 100 && (downloads - milestone) <= 10;
+  const isMilestone = milestone >= 100;
+  
+  // Debug logging
+  useEffect(() => {
+    console.log("Download stats:", {
+      total: allDownloads.data?.total,
+      modrinth: allDownloads.data?.modrinth,
+      hangar: allDownloads.data?.hangar,
+      spigot: allDownloads.data?.spigot,
+      isLoading: allDownloads.isLoading,
+      error: allDownloads.error
+    });
+  }, [allDownloads.data, allDownloads.isLoading]);
 
   useEffect(() => {
     if (!isMilestone) return;

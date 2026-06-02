@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
 export default defineConfig({
-  base: '/drone-delivery-docs/',
+  base: process.env.NODE_ENV === 'production' ? '/drone-delivery-docs/' : '/',
   plugins: [tailwindcss(), react()],
   resolve: {
     alias: {
@@ -13,6 +13,9 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    host: '0.0.0.0',
+    middlewareMode: false,
+    allowedHosts: 'all',
   },
 })
 
