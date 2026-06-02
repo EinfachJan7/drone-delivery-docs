@@ -121,32 +121,47 @@ function Home() {
     if (!isMilestone) return;
 
     let animationFrameId: number;
+    let isRunning = true;
     // Muted, non-neon blue colors
     const colors = ['#4682b4', '#5f9ea0', '#87ceeb', '#87cefa', '#b0c4de', '#add8e6'];
 
     const frame = () => {
-      confetti({
-        particleCount: 2,
-        startVelocity: 0,
-        ticks: 300,
-        gravity: 0.3,
-        origin: {
-          x: Math.random(),
-          y: Math.random() * 0.2 - 0.2
-        },
-        colors: colors,
-        shapes: ['circle'],
-        scalar: Math.random() * 0.6 + 0.4,
-        zIndex: 9999,
-        disableForReducedMotion: true
-      });
+      if (!isRunning) return;
+      
+      try {
+        confetti({
+          particleCount: 2,
+          startVelocity: 0,
+          ticks: 300,
+          gravity: 0.3,
+          origin: {
+            x: Math.random(),
+            y: Math.random() * 0.2 - 0.2
+          },
+          colors: colors,
+          shapes: ['circle'],
+          scalar: Math.random() * 0.6 + 0.4,
+          zIndex: 9999,
+          disableForReducedMotion: true
+        });
+      } catch (error) {
+        console.warn("Confetti animation error:", error);
+        isRunning = false;
+        return;
+      }
 
       animationFrameId = requestAnimationFrame(frame);
     };
 
-    frame();
+    // Ensure confetti library is initialized on mobile
+    try {
+      frame();
+    } catch (error) {
+      console.warn("Failed to initialize confetti:", error);
+    }
 
     return () => {
+      isRunning = false;
       cancelAnimationFrame(animationFrameId);
     };
   }, [isMilestone]);

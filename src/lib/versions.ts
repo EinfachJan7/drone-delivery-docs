@@ -187,36 +187,66 @@ export async function fetchDownloadStats(): Promise<DownloadStats | null> {
   try {
     const timestamp = Date.now();
     
-    const [modrinthRes, hangarRes, spigotRes] = await Promise.all([
-      fetch(`https://api.modrinth.com/v2/project/advanceddeliverydrones?_t=${timestamp}`, getStrictFetchOptions()),
-      fetch(`https://hangar.papermc.io/api/v1/projects/Baumkrieger69/AdvancedDeliveryDrones?_t=${timestamp}`, getStrictFetchOptions()),
-      fetch(`${SPIGOT_RESOURCE_API}?_t=${timestamp}`, getLooseFetchOptions()),
+    // Add timeout to prevent hanging on mobile networks
+    const fetchWithTimeout = (url: string, options: any, timeoutMs: number = 10000) => {
+      return Promise.race([
+        fetch(url, options),
+        new Promise<Response>((_, reject) =>
+          setTimeout(() => reject(new Error('Fetch timeout')), timeoutMs)
+        ),
+      ]);
+    };
+
+    const [modrinthRes, hangarRes, spigotRes] = await Promise.allSettled([
+      fetchWithTimeout(`https://api.modrinth.com/v2/project/advanceddeliverydrones?_t=${timestamp}`, getStrictFetchOptions(), 10000),
+      fetchWithTimeout(`https://hangar.papermc.io/api/v1/projects/Baumkrieger69/AdvancedDeliveryDrones?_t=${timestamp}`, getStrictFetchOptions(), 10000),
+      fetchWithTimeout(`${SPIGOT_RESOURCE_API}?_t=${timestamp}`, getLooseFetchOptions(), 10000),
     ]);
 
     let modrinthDownloads = 0;
     let hangarDownloads = 0;
     let spigotDownloads = 0;
 
-    if (modrinthRes.ok) {
-      const modrinthData = await modrinthRes.json();
-      modrinthDownloads = modrinthData.downloads || 0;
+    if (modrinthRes.status === 'fulfilled' && modrinthRes.value.ok) {
+      try {
+        const modrinthData = await modrinthRes.value.json();
+        modrinthDownloads = modrinthData.downloads || 0;
+      } catch (e) {
+        console.warn("Error parsing Modrinth response:", e);
+      }
+    } else if (modrinthRes.status === 'rejected') {
+      console.warn("Modrinth fetch failed:", modrinthRes.reason);
     }
 
-    if (hangarRes.ok) {
-      const hangarData = await hangarRes.json();
-      hangarDownloads = hangarData.stats?.downloads || 0;
+    if (hangarRes.status === 'fulfilled' && hangarRes.value.ok) {
+      try {
+        const hangarData = await hangarRes.value.json();
+        hangarDownloads = hangarData.stats?.downloads || 0;
+      } catch (e) {
+        console.warn("Error parsing Hangar response:", e);
+      }
+    } else if (hangarRes.status === 'rejected') {
+      console.warn("Hangar fetch failed:", hangarRes.reason);
     }
 
-    if (spigotRes.ok) {
-      const spigotData = await spigotRes.json();
-      spigotDownloads = spigotData.downloads || 0;
+    if (spigotRes.status === 'fulfilled' && spigotRes.value.ok) {
+      try {
+        const spigotData = await spigotRes.value.json();
+        spigotDownloads = spigotData.downloads || 0;
+      } catch (e) {
+        console.warn("Error parsing Spigot response:", e);
+      }
+    } else if (spigotRes.status === 'rejected') {
+      console.warn("Spigot fetch failed:", spigotRes.reason);
     }
 
+    const total = modrinthDownloads + hangarDownloads + spigotDownloads;
+    
     return {
       modrinth: modrinthDownloads,
       hangar: hangarDownloads,
       spigot: spigotDownloads,
-      total: modrinthDownloads + hangarDownloads + spigotDownloads,
+      total: total,
     };
   } catch (error) {
     console.error("Error fetching download stats:", error);
