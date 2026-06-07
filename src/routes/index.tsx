@@ -135,59 +135,23 @@ function Home() {
     const shootConfetti = () => {
       if (!isRunning) return;
       
-      // First burst - many particles
       confetti({
-        particleCount: 50,
-        startVelocity: 15,
-        ticks: 300,
-        gravity: 0.8,
+        particleCount: 1,
+        startVelocity: 0,
+        ticks: 150,
+        gravity: 0.1,
         origin: {
           x: Math.random(),
-          y: Math.random() * 0.3 - 0.3
+          y: -0.1
         },
         colors: colors,
         shapes: ['circle'],
-        scalar: Math.random() * 1.2 + 0.8,
+        scalar: Math.random() * 0.6 + 0.4,
         zIndex: 9999,
         disableForReducedMotion: true
       });
 
-      // Second burst - side particles
-      confetti({
-        particleCount: 40,
-        startVelocity: 12,
-        ticks: 250,
-        gravity: 0.7,
-        origin: {
-          x: Math.random() * 0.5,
-          y: Math.random() * 0.2
-        },
-        colors: colors,
-        shapes: ['circle'],
-        scalar: Math.random() * 1.0 + 0.6,
-        zIndex: 9999,
-        disableForReducedMotion: true
-      });
-
-      // Third burst - other side particles
-      confetti({
-        particleCount: 40,
-        startVelocity: 12,
-        ticks: 250,
-        gravity: 0.7,
-        origin: {
-          x: Math.random() * 0.5 + 0.5,
-          y: Math.random() * 0.2
-        },
-        colors: colors,
-        shapes: ['circle'],
-        scalar: Math.random() * 1.0 + 0.6,
-        zIndex: 9999,
-        disableForReducedMotion: true
-      });
-
-      // Loop - repeat after 1.5 seconds
-      timeoutIdRef.current = setTimeout(shootConfetti, 1500);
+      timeoutIdRef.current = setTimeout(shootConfetti, 50);
     };
 
     // Start after small delay
