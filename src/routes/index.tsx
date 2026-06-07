@@ -137,9 +137,9 @@ function Home() {
       
       confetti({
         particleCount: 2,
-        startVelocity: 2,
+        startVelocity: 3,
         ticks: 300,
-        gravity: 0.2,
+        gravity: 0.4,
         origin: {
           x: Math.random(),
           y: 0
@@ -147,7 +147,7 @@ function Home() {
         colors: colors,
         shapes: ['circle'],
         scalar: Math.random() * 0.6 + 0.4,
-        zIndex: 9999,
+        zIndex: 30, // Lower than header z-40 so it falls from behind the header
         disableForReducedMotion: true
       });
 
