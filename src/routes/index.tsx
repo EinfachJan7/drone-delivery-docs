@@ -115,57 +115,91 @@ function Home() {
 
   const downloads = allDownloads.data?.total || 0;
   
-  const showConfettiRef = useRef(false);
   const animationFrameIdRef = useRef<number | null>(null);
+  const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (downloads <= 0 || showConfettiRef.current) return;
-
-    showConfettiRef.current = true;
+    if (downloads <= 0) return;
     
     // Clean up any existing animation
     if (animationFrameIdRef.current !== null) {
       cancelAnimationFrame(animationFrameIdRef.current);
     }
+    if (timeoutIdRef.current !== null) {
+      clearTimeout(timeoutIdRef.current);
+    }
 
     const colors = ['#4682b4', '#5f9ea0', '#87ceeb', '#87cefa', '#b0c4de', '#add8e6'];
+    let isRunning = true;
     
-    let iterations = 0;
-    const maxIterations = 30; // More iterations for better effect
-    
-    const frame = () => {
-      if (iterations >= maxIterations) {
-        animationFrameIdRef.current = null;
-        return;
-      }
-
+    const shootConfetti = () => {
+      if (!isRunning) return;
+      
+      // First burst - many particles
       confetti({
-        particleCount: 5,
-        startVelocity: 5,
-        ticks: 200,
-        gravity: 0.5,
+        particleCount: 50,
+        startVelocity: 15,
+        ticks: 300,
+        gravity: 0.8,
         origin: {
           x: Math.random(),
           y: Math.random() * 0.3 - 0.3
         },
         colors: colors,
         shapes: ['circle'],
-        scalar: Math.random() * 0.8 + 0.5,
+        scalar: Math.random() * 1.2 + 0.8,
         zIndex: 9999,
         disableForReducedMotion: true
       });
 
-      iterations++;
-      animationFrameIdRef.current = requestAnimationFrame(frame);
+      // Second burst - side particles
+      confetti({
+        particleCount: 40,
+        startVelocity: 12,
+        ticks: 250,
+        gravity: 0.7,
+        origin: {
+          x: Math.random() * 0.5,
+          y: Math.random() * 0.2
+        },
+        colors: colors,
+        shapes: ['circle'],
+        scalar: Math.random() * 1.0 + 0.6,
+        zIndex: 9999,
+        disableForReducedMotion: true
+      });
+
+      // Third burst - other side particles
+      confetti({
+        particleCount: 40,
+        startVelocity: 12,
+        ticks: 250,
+        gravity: 0.7,
+        origin: {
+          x: Math.random() * 0.5 + 0.5,
+          y: Math.random() * 0.2
+        },
+        colors: colors,
+        shapes: ['circle'],
+        scalar: Math.random() * 1.0 + 0.6,
+        zIndex: 9999,
+        disableForReducedMotion: true
+      });
+
+      // Loop - repeat after 1.5 seconds
+      timeoutIdRef.current = setTimeout(shootConfetti, 1500);
     };
 
-    // Small delay for visual polish
-    setTimeout(frame, 500);
+    // Start after small delay
+    timeoutIdRef.current = setTimeout(shootConfetti, 500);
 
     return () => {
+      isRunning = false;
       if (animationFrameIdRef.current !== null) {
         cancelAnimationFrame(animationFrameIdRef.current);
-        animationFrameIdRef.current = null;
+      }
+      if (timeoutIdRef.current !== null) {
+        clearTimeout(timeoutIdRef.current);
       }
     };
   }, [downloads]);
