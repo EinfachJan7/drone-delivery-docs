@@ -26,6 +26,7 @@ const tabs = [
   { id: "permissions", label: "Permissions", icon: Shield },
   { id: "configuration", label: "Configuration", icon: Settings2 },
   { id: "gui", label: "GUI", icon: Settings2 },
+  { id: "advanced", label: "Advanced", icon: Code2 },
   { id: "placeholders", label: "PlaceholderAPI", icon: Code2 },
 ];
 
@@ -186,8 +187,10 @@ const configKeys = [
   { key: "settings.drone.skull-texture", desc: "Base64 texture string for the default drone player head." },
   { key: "settings.drone.socket-name-validation.allowed-characters", desc: "String of allowed characters if use-allowed-list is true." },
   { key: "settings.drone.socket-name-validation.prohibited-characters", desc: "String of forbidden characters if use-allowed-list is false." },
-  { key: "settings.drone.locate-particles.particle", desc: "The Bukkit Particle type used for /drone locate (e.g. HAPPY_VILLAGER)." },
-  { key: "settings.drone.container-integration.blacklist", desc: "List of container materials to ignore for auto-unload (e.g. TRAPPED_CHEST)." },
+  { key: "settings.drone.animal-return-mode", desc: "How animals return when delivery aborts: FLY (drone flies back) or TELEPORT (instant return). Affects realism vs. speed." },
+  { key: "settings.drone.container-integration.enabled", desc: "Auto-unload drone contents to nearby containers (hoppers, chests, etc.) when landing near socket." },
+  { key: "settings.drone.container-integration.search-radius", desc: "Horizontal radius in blocks to search for containers. 0 = only socket block & block below." },
+  { key: "settings.drone.container-integration.blacklist", desc: "List of container materials to ignore (e.g., TRAPPED_CHEST). Example: [TRAPPED_CHEST, BEACON]." },
   { key: "settings.drone.particle-types", desc: "List of particle effects for the drone flight trail (e.g. ELECTRIC_SPARK or DUST:255,0,0:1.0)." },
   { key: "settings.drone.particle-count", desc: "Number of particles spawned per tick." },
   { key: "settings.drone.particle-trail-length", desc: "Length of the drone flight particle trail." },
@@ -560,33 +563,527 @@ function DocsPage() {
                   </p>
                   
                   <h4 className="mt-4 font-medium mb-2">NBT Mob Sending Variables</h4>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    When using the <code className="code-inline">mob-sending</code> GUI, you can access dozens of NBT properties in <code className="code-inline">animal-item.lore</code> and <code className="code-inline">animal-item.selected-lore</code> to display precise information about the animal:
+                  <p className="text-sm text-muted-foreground mb-4">
+                    When using the <code className="code-inline">mob-sending</code> GUI, you can access detailed NBT properties in <code className="code-inline">animal-item.lore</code> and <code className="code-inline">animal-item.selected-lore</code> to display precise animal information. Below is a comprehensive reference of all available variables:
                   </p>
-                  <ul className="list-disc list-inside text-xs text-muted-foreground grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-1">
-                    <li><code className="code-inline">&lt;type&gt;</code>, <code className="code-inline">&lt;custom-name&gt;</code></li>
-                    <li><code className="code-inline">&lt;health&gt;</code>, <code className="code-inline">&lt;max-health&gt;</code></li>
-                    <li><code className="code-inline">&lt;speed&gt;</code>, <code className="code-inline">&lt;jump&gt;</code>, <code className="code-inline">&lt;size&gt;</code></li>
-                    <li><code className="code-inline">&lt;color&gt;</code>, <code className="code-inline">&lt;variant&gt;</code></li>
-                    <li><code className="code-inline">&lt;profession&gt;</code>, <code className="code-inline">&lt;age&gt;</code></li>
-                    <li><code className="code-inline">&lt;owner&gt;</code>, <code className="code-inline">&lt;saddled&gt;</code></li>
-                    <li><code className="code-inline">&lt;sheared&gt;</code>, <code className="code-inline">&lt;sitting&gt;</code></li>
-                    <li><code className="code-inline">&lt;anger&gt;</code>, <code className="code-inline">&lt;awake&gt;</code></li>
-                    <li><code className="code-inline">&lt;trusting&gt;</code>, <code className="code-inline">&lt;sleeping&gt;</code></li>
-                    <li><code className="code-inline">&lt;crouching&gt;</code>, <code className="code-inline">&lt;powered&gt;</code></li>
-                    <li><code className="code-inline">&lt;charged&gt;</code>, <code className="code-inline">&lt;ignited&gt;</code></li>
-                    <li><code className="code-inline">&lt;shivering&gt;</code>, <code className="code-inline">&lt;drinking-potion&gt;</code></li>
-                    <li><code className="code-inline">&lt;panda-main-gene&gt;</code>, <code className="code-inline">&lt;has-egg&gt;</code></li>
-                    <li><code className="code-inline">&lt;carried-block&gt;</code>, <code className="code-inline">&lt;derp&gt;</code></li>
-                    <li><code className="code-inline">&lt;left-horn&gt;</code>, <code className="code-inline">&lt;right-horn&gt;</code></li>
-                    <li><code className="code-inline">&lt;tropical-pattern&gt;</code>, <code className="code-inline">&lt;zombie-baby&gt;</code></li>
-                    <li><code className="code-inline">&lt;villager-type&gt;</code>, <code className="code-inline">&lt;can-breed&gt;</code></li>
-                    <li><code className="code-inline">&lt;domestication&gt;</code>, <code className="code-inline">&lt;anger-level&gt;</code></li>
-                    <li><code className="code-inline">&lt;immune-to-zombification&gt;</code></li>
-                    <li><code className="code-inline">&lt;patrol-leader&gt;</code>, <code className="code-inline">&lt;can-duplicate&gt;</code></li>
-                    <li><code className="code-inline">&lt;sniffer-state&gt;</code>, <code className="code-inline">&lt;dragon-phase&gt;</code></li>
-                    <li><code className="code-inline">&lt;villager-level&gt;</code>, <code className="code-inline">&lt;villager-experience&gt;</code></li>
-                  </ul>
+                  
+                  <div className="space-y-4 mb-4">
+                    <div className="card-surface p-4 bg-black/20">
+                      <h5 className="font-semibold text-sm mb-3">🐾 Basic Information</h5>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;type&gt;</code>
+                          <p className="text-muted-foreground mt-1">Animal entity type name (e.g., &quot;Cow&quot;, &quot;Pig&quot;, &quot;Horse&quot;)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;custom-name&gt;</code>
+                          <p className="text-muted-foreground mt-1">Custom display name if set, empty string otherwise</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card-surface p-4 bg-black/20">
+                      <h5 className="font-semibold text-sm mb-3">❤️ Health & Attributes</h5>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;health&gt;</code>
+                          <p className="text-muted-foreground mt-1">Current health points (decimal, e.g., &quot;18.5&quot;)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;max-health&gt;</code>
+                          <p className="text-muted-foreground mt-1">Maximum health attribute (default 20.0 for most mobs)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;speed&gt;</code>
+                          <p className="text-muted-foreground mt-1">Movement speed attribute (0.1-1.0, default 0.2)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;jump&gt;</code>
+                          <p className="text-muted-foreground mt-1">Jump strength (Horses only, decimal value)</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card-surface p-4 bg-black/20">
+                      <h5 className="font-semibold text-sm mb-3">🎨 Appearance & Colors</h5>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;color&gt;</code>
+                          <p className="text-muted-foreground mt-1">Color (Sheep, Wolves, Cats - e.g., &quot;WHITE&quot;, &quot;RED&quot;)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;variant&gt;</code>
+                          <p className="text-muted-foreground mt-1">Specific variant (Axolotl, Fox, Frog, Llama, Panda, etc.)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;tropical-pattern&gt;</code>
+                          <p className="text-muted-foreground mt-1">Tropical fish pattern type</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;tropical-body-color&gt;</code>
+                          <p className="text-muted-foreground mt-1">Tropical fish body color</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;tropical-pattern-color&gt;</code>
+                          <p className="text-muted-foreground mt-1">Tropical fish pattern color</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;size&gt;</code>
+                          <p className="text-muted-foreground mt-1">Mob size (Slimes &amp; Magma Cubes, 1-4)</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card-surface p-4 bg-black/20">
+                      <h5 className="font-semibold text-sm mb-3">👤 Behavior & State</h5>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;age&gt;</code>
+                          <p className="text-muted-foreground mt-1">Age status (&quot;Adult&quot; or &quot;Baby&quot;)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;can-breed&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if animal is ready to breed, null otherwise</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;sitting&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if mob is sitting (Foxes, Cats)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;sleeping&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if Fox is sleeping</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;crouching&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if Fox is crouching</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;awake&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if Bat is awake</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card-surface p-4 bg-black/20">
+                      <h5 className="font-semibold text-sm mb-3">🔥 Special Properties</h5>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;owner&gt;</code>
+                          <p className="text-muted-foreground mt-1">Owner name if tamed (Dogs, Cats, Horses)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;saddled&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if has saddle (Pigs, Horses, Striders)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;sheared&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if Sheep has been sheared</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;anger&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Angry&quot; if hostile state (Bees, Wolves)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;powered&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if Creeper is powered by lightning</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;charged&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if Wither is charged</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;ignited&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if Creeper is ignited/exploding</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;shivering&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if Strider is cold/shivering</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card-surface p-4 bg-black/20">
+                      <h5 className="font-semibold text-sm mb-3">👨‍🌾 Villager & Profession</h5>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;profession&gt;</code>
+                          <p className="text-muted-foreground mt-1">Villager profession (e.g., &quot;FARMER&quot;, &quot;LIBRARIAN&quot;)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;villager-type&gt;</code>
+                          <p className="text-muted-foreground mt-1">Biome type (Villager &amp; ZombieVillager)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;villager-level&gt;</code>
+                          <p className="text-muted-foreground mt-1">Trade level (1-5, 1=Novice, 5=Master)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;villager-experience&gt;</code>
+                          <p className="text-muted-foreground mt-1">Trade experience points (numeric)</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card-surface p-4 bg-black/20">
+                      <h5 className="font-semibold text-sm mb-3">🐴 Horse & Domestication</h5>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;domestication&gt;</code>
+                          <p className="text-muted-foreground mt-1">Current taming level (0-100)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;max-domestication&gt;</code>
+                          <p className="text-muted-foreground mt-1">Maximum taming level (usually 100)</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card-surface p-4 bg-black/20">
+                      <h5 className="font-semibold text-sm mb-3">🐼 Panda & Genetics</h5>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;panda-main-gene&gt;</code>
+                          <p className="text-muted-foreground mt-1">Primary panda gene (determines personality)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;panda-hidden-gene&gt;</code>
+                          <p className="text-muted-foreground mt-1">Recessive panda gene (from breeding)</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card-surface p-4 bg-black/20">
+                      <h5 className="font-semibold text-sm mb-3">🦌 Goats & Other Variants</h5>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;left-horn&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if Goat has left horn</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;right-horn&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if Goat has right horn</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;carried-block&gt;</code>
+                          <p className="text-muted-foreground mt-1">Block name carried by Enderman (e.g., &quot;DIRT&quot;)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;derp&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if Snowman has derp expression</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card-surface p-4 bg-black/20">
+                      <h5 className="font-semibold text-sm mb-3">🧟 Zombies & Undead</h5>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;zombie-baby&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if Zombie is baby/small</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;trusting&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if Ocelot trusts the player</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;player-created&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if IronGolem was built by player</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;has-egg&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if Turtle female with eggs</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card-surface p-4 bg-black/20">
+                      <h5 className="font-semibold text-sm mb-3">⚡ Advanced / Version-Specific</h5>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;anger-level&gt;</code>
+                          <p className="text-muted-foreground mt-1">Warden's anger level (1.19+)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;immune-to-zombification&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if Piglin can't zombify (1.16+)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;patrol-leader&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if Raider leads patrol</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;can-duplicate&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if Allay can duplicate (1.20+)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;sniffer-state&gt;</code>
+                          <p className="text-muted-foreground mt-1">Sniffer state (IDLE, SEARCHING, DIGGING)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;dragon-phase&gt;</code>
+                          <p className="text-muted-foreground mt-1">Ender Dragon phase (CIRCLING, STRAFING, etc.)</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;drinking-potion&gt;</code>
+                          <p className="text-muted-foreground mt-1">&quot;Yes&quot; if Witch is drinking potion</p>
+                        </div>
+                        <div className="p-2 bg-black/30 rounded">
+                          <code className="code-inline text-[0.7rem]">&lt;puff-state&gt;</code>
+                          <p className="text-muted-foreground mt-1">PufferFish puff level (0-2)</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="card-surface p-4 bg-blue/10 border border-blue/20 text-sm">
+                    <p className="text-muted-foreground"><strong>💡 Tip:</strong> Variables that don't apply to an animal type (e.g., <code className="code-inline">&lt;saddled&gt;</code> for a Cow) will be silently skipped. Use conditional placeholders in your YAML config to show/hide specific lines.</p>
+                  </div>
+
+                  <h4 className="mt-6 font-medium mb-3">Example: Animal Selection GUI Configuration</h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Configure the animal selection inventory in <code className="code-inline">gui.yml</code> to customize the mob-sending experience:
+                  </p>
+                  <pre className="p-4 bg-black/40 rounded-md overflow-x-auto text-xs mb-4"><code>{`mob-sending:
+  animal-selection:
+    title: "<!italic><gold>sᴇʟᴇᴄᴛ ᴀɴɪᴍᴀʟs</gold>"
+    size: 54
+    fill-item:
+      material: "GRAY_STAINED_GLASS_PANE"
+      name: " "
+    
+    animal-item:
+      material: "NAME_TAG"  # Fallback material
+      name: "<!italic><green><<type>></green>"
+      lore:
+        - "<!italic><gray>❤ Health: <health>/<max-health>"
+        - "<!italic><gray>⚡ Speed: <speed>"
+        - "<!italic><gray>🎨 Color: <color>"
+        - "<!italic><gray>📍 Variant: <variant>"
+        - "<!italic><gray>👤 Age: <age>"
+        - "<!italic><gray>📝 Custom Name: <custom-name>"
+        - "<!italic><gray>Owner: <owner>"
+        - " "
+        - "<!italic><yellow>Click to select!"
+    
+    animal-item-selected:
+      name: "<!italic><gold>✓ <type></gold>"
+      lore:
+        - "<!italic><gray>Status: Selected"
+        - "<!italic><gray>❤ Health: <health>/<max-health>"
+        - " "
+        - "<!italic><yellow>Click to deselect!"
+    
+    back:
+      position: 49
+      material: "ARROW"
+      name: "<!italic><yellow>⟵ ʙᴀᴄᴋ"
+    
+    previous-page:
+      position: 47
+      material: "OAK_BUTTON"
+      name: "<!italic><yellow>◄ Previous"
+    
+    next-page:
+      position: 51
+      material: "OAK_BUTTON"
+      name: "<!italic><yellow>Next ►"`}</code></pre>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Advanced Features */}
+          {activeTab === "advanced" && (
+            <div>
+              <h2 className="mb-4 sm:mb-6 text-2xl sm:text-3xl font-bold">Advanced Features</h2>
+              
+              <div className="space-y-6">
+                {/* Collection Animation */}
+                <div className="card-surface p-4 sm:p-6">
+                  <div className="flex items-start gap-3 mb-3">
+                    <Sparkles className="h-5 w-5 text-[var(--color-accent)] mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-lg font-semibold">Collection Animation</h3>
+                      <p className="text-xs text-muted-foreground mt-1">When a player opens a landed drone, items float out in an animation.</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">Visual effect when collecting items from a drone. Duration: 2 seconds (40 ticks).</p>
+                  <div className="p-3 bg-black/30 rounded text-xs font-mono">
+                    <code>settings.drone.collection-animation.enabled: true</code>
+                  </div>
+                </div>
+
+                {/* Boss Bar & Hologram */}
+                <div className="card-surface p-4 sm:p-6">
+                  <div className="flex items-start gap-3 mb-3">
+                    <Radio className="h-5 w-5 text-[var(--color-accent)] mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-lg font-semibold">Live Tracking Display</h3>
+                      <p className="text-xs text-muted-foreground mt-1">Real-time visual feedback for drone deliveries.</p>
+                    </div>
+                  </div>
+                  <div className="space-y-3 text-sm text-muted-foreground">
+                    <div>
+                      <p className="font-semibold text-foreground mb-1">📊 Boss Bar</p>
+                      <p>Shows distance to drone and estimated arrival time (ETA). Updates every second with color customization (PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE).</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground mb-1">📍 Hologram</p>
+                      <p>Displays recipient name and live countdown timer above the drone. Y-offset is configurable, and formats differ between player and socket deliveries.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Elytra & Airborne Following */}
+                <div className="card-surface p-4 sm:p-6">
+                  <div className="flex items-start gap-3 mb-3">
+                    <Zap className="h-5 w-5 text-[var(--color-accent)] mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-lg font-semibold">Dynamic Flight Tracking</h3>
+                      <p className="text-xs text-muted-foreground mt-1">Drones adapt to player movement in real-time.</p>
+                    </div>
+                  </div>
+                  <div className="space-y-3 text-sm text-muted-foreground">
+                    <div>
+                      <p className="font-semibold text-foreground mb-1">🪂 Elytra Glide Following</p>
+                      <p>When a receiver glides with elytra, the drone follows with a +5 block Y-offset until they land. Seamless tracking during flight.</p>
+                      <code className="text-xs bg-black/30 px-2 py-1 rounded inline-block mt-1">follow-gliding-player: true</code>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground mb-1">📉 Airborne Follow</p>
+                      <p>Before landing, if receiver is significantly airborne (&gt;5 blocks high), drone follows until grounded, then lands. Max 15 seconds from flight start.</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1 text-xs">
+                        <code className="bg-black/30 px-2 py-1 rounded">follow-airborne-player-before-landing: true</code>
+                        <code className="bg-black/30 px-2 py-1 rounded">airborne-follow-min-height: 5.0</code>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Container Integration */}
+                <div className="card-surface p-4 sm:p-6">
+                  <div className="flex items-start gap-3 mb-3">
+                    <Package className="h-5 w-5 text-[var(--color-accent)] mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-lg font-semibold">Container Auto-Unload</h3>
+                      <p className="text-xs text-muted-foreground mt-1">Drones can automatically unload items to nearby containers when arriving at sockets.</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <p>Perfect for automated farms and storage systems. Searches for containers (chests, hoppers, barrels, etc.) within configurable radius and attempts to move items.</p>
+                    <div className="p-3 bg-black/30 rounded text-xs space-y-1">
+                      <p><code>enabled: true</code> — Activation toggle</p>
+                      <p><code>search-radius: 0</code> — Horizontal search (0 = socket block only)</p>
+                      <p><code>blacklist: [TRAPPED_CHEST, ...]</code> — Ignored container types</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Discord Integration */}
+                <div className="card-surface p-4 sm:p-6">
+                  <div className="flex items-start gap-3 mb-3">
+                    <Radio className="h-5 w-5 text-[var(--color-accent)] mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-lg font-semibold">Discord Webhooks</h3>
+                      <p className="text-xs text-muted-foreground mt-1">Send delivery events to Discord with rich embeds.</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <p>Events: Delivery Started, Completed, Declined, Expired. Rich embeds support custom colors, thumbnails, images, and footers. Can include item and animal lists.</p>
+                    <div className="p-3 bg-black/30 rounded text-xs space-y-1">
+                      <p><code>enabled: true</code> — Master toggle</p>
+                      <p><code>webhook-url: "https://..."</code> — Discord webhook URL</p>
+                      <p><code>embed.enabled: true</code> — Use rich embeds vs plain text</p>
+                      <p><code>include-items: true</code> — List items in message</p>
+                      <p><code>include-animals: true</code> — List animals in message</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* In-Game Config Editor */}
+                <div className="card-surface p-4 sm:p-6">
+                  <div className="flex items-start gap-3 mb-3">
+                    <Settings2 className="h-5 w-5 text-[var(--color-accent)] mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-lg font-semibold">In-Game Config Editor</h3>
+                      <p className="text-xs text-muted-foreground mt-1">Edit all settings without restarting the server.</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <p>Admins can open an interactive GUI to edit all <code className="code-inline">config.yml</code> values in-game. Changes apply immediately with live validation.</p>
+                    <div className="p-3 bg-black/30 rounded text-xs space-y-1">
+                      <p><code>/drone config</code> — Open editor (requires <code>drone.admin.config</code>)</p>
+                      <p><code>plugin.config-editor-messages-enabled: true</code> — Show chat notifications for changes</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Database Conversion */}
+                <div className="card-surface p-4 sm:p-6">
+                  <div className="flex items-start gap-3 mb-3">
+                    <Shield className="h-5 w-5 text-[var(--color-accent)] mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-lg font-semibold">YAML ↔ MySQL Migration</h3>
+                      <p className="text-xs text-muted-foreground mt-1">Seamlessly convert active drone data between storage formats.</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <p>Migrate all active drone data without downtime. Sockets, blacklists, and player settings always remain in YAML.</p>
+                    <div className="p-3 bg-black/30 rounded text-xs space-y-1">
+                      <p><code>/drone convert yaml-to-mysql</code> — Export to MySQL</p>
+                      <p><code>/drone convert mysql-to-yaml</code> — Export to YAML</p>
+                      <p><code>database.type: YAML|MYSQL</code> — Set default storage</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Compose Draft Persistence */}
+                <div className="card-surface p-4 sm:p-6">
+                  <div className="flex items-start gap-3 mb-3">
+                    <Package className="h-5 w-5 text-[var(--color-accent)] mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-lg font-semibold">Compose Draft Auto-Save</h3>
+                      <p className="text-xs text-muted-foreground mt-1">Items stay in the compose GUI even after closing.</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground">When you close the compose GUI, your selected items and animals are automatically saved. Open <code className="code-inline">/drone send</code> again and your draft is restored.</p>
+                </div>
+
+                {/* Blocked Worlds */}
+                <div className="card-surface p-4 sm:p-6">
+                  <div className="flex items-start gap-3 mb-3">
+                    <Shield className="h-5 w-5 text-[var(--color-accent)] mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-lg font-semibold">World Restrictions</h3>
+                      <p className="text-xs text-muted-foreground mt-1">Admins can disable drone sends in specific worlds.</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <p>Block drones from being sent to/from certain worlds (e.g., creative mode, minigames, PvP arenas).</p>
+                    <div className="p-3 bg-black/30 rounded text-xs">
+                      <code>blocked-worlds: [creative, minigame_arena, pvp_zone]</code>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cooldowns & Self-Send */}
+                <div className="card-surface p-4 sm:p-6">
+                  <div className="flex items-start gap-3 mb-3">
+                    <Zap className="h-5 w-5 text-[var(--color-accent)] mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-lg font-semibold">Rate Limiting & Self-Sends</h3>
+                      <p className="text-xs text-muted-foreground mt-1">Control send frequency and allow/block self-deliveries.</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <p>Separate cooldowns for player-to-player and player-to-socket deliveries. Toggle whether players can send to themselves.</p>
+                    <div className="p-3 bg-black/30 rounded text-xs space-y-1">
+                      <p><code>send-cooldown-seconds-player: 0</code> — Seconds between player sends (0 = none)</p>
+                      <p><code>send-cooldown-seconds-socket: 0</code> — Seconds between socket sends</p>
+                      <p><code>allow-send-to-self-player: false</code> — Block sending to yourself</p>
+                      <p><code>allow-send-to-self-socket: false</code> — Block sending to own sockets</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -833,7 +1330,7 @@ function DocsPage() {
                 </table>
               </div>
 
-              <h3 className="mb-3 sm:mb-4 text-base sm:text-lg font-semibold">Config Mirrors</h3>
+              <h3 className="mb-4 text-lg font-semibold">Config Mirrors</h3>
               <p className="mb-2 sm:mb-3 text-xs text-muted-foreground">Access config values with <code className="code-inline">%deliverydrones_config_*%</code> to mirror <code className="code-inline">settings.drone.*</code> keys.</p>
               <div className="card-surface overflow-x-auto">
                 <table className="table-docs">
@@ -939,6 +1436,74 @@ function DocsPage() {
                     <tr>
                       <td className="whitespace-nowrap"><code className="code-inline text-xs">%deliverydrones_config_locate_particles%</code></td>
                       <td className="whitespace-nowrap"><code className="code-inline text-xs">locate-particles.enabled</code></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h3 className="mb-4 mt-6 text-lg font-semibold">Item & Animal Index Access</h3>
+              <p className="mb-3 text-xs text-muted-foreground">Access specific items or animals from a drone by index:</p>
+              <div className="card-surface overflow-x-auto mb-6">
+                <table className="table-docs">
+                  <thead>
+                    <tr>
+                      <th>Placeholder</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><code className="code-inline text-xs">%deliverydrones_item_&lt;index&gt;_name%</code></td>
+                      <td className="text-muted-foreground text-sm">Name of the item at position (1-based index). Example: <code className="code-inline text-xs">%deliverydrones_item_1_name%</code></td>
+                    </tr>
+                    <tr>
+                      <td><code className="code-inline text-xs">%deliverydrones_item_&lt;index&gt;_amount%</code></td>
+                      <td className="text-muted-foreground text-sm">Stack size of the item (e.g., 64, 1, 16)</td>
+                    </tr>
+                    <tr>
+                      <td><code className="code-inline text-xs">%deliverydrones_item_&lt;index&gt;_material%</code></td>
+                      <td className="text-muted-foreground text-sm">Material type of the item (e.g., DIAMOND, IRON_INGOT)</td>
+                    </tr>
+                    <tr>
+                      <td><code className="code-inline text-xs">%deliverydrones_animal_&lt;index&gt;_name%</code></td>
+                      <td className="text-muted-foreground text-sm">Type of animal (1-based index). Example: <code className="code-inline text-xs">%deliverydrones_animal_1_name%</code></td>
+                    </tr>
+                    <tr>
+                      <td><code className="code-inline text-xs">%deliverydrones_animal_&lt;index&gt;_type%</code></td>
+                      <td className="text-muted-foreground text-sm">Animal entity type (e.g., COW, PIG, HORSE)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h3 className="mb-4 text-lg font-semibold">UUID-based Drone Access</h3>
+              <p className="mb-3 text-xs text-muted-foreground">Access drone information by UUID instead of player context:</p>
+              <div className="card-surface p-4 bg-blue/10 border border-blue/20 text-sm mb-6">
+                <p className="text-muted-foreground"><strong>Format:</strong> <code className="code-inline">%deliverydrones_id_&lt;uuid&gt;_&lt;field&gt;%</code> or <code className="code-inline">%deliverydrones_drone_&lt;uuid&gt;_&lt;field&gt;%</code></p>
+                <p className="text-muted-foreground mt-2"><strong>Example:</strong> <code className="code-inline">%deliverydrones_id_550e8400-e29b-41d4-a716-446655440000_receiver%</code></p>
+                <p className="text-muted-foreground mt-2">Use any field from the "Outgoing/Incoming Drone Fields" table above (sender, receiver, distance, eta, items_summary, etc.)</p>
+              </div>
+
+              <h3 className="mb-4 text-lg font-semibold">UUID to Name Resolution</h3>
+              <p className="mb-3 text-xs text-muted-foreground">Resolve a player name from UUID (works even for offline players):</p>
+              <div className="card-surface overflow-x-auto">
+                <table className="table-docs">
+                  <tbody>
+                    <tr>
+                      <td><code className="code-inline text-xs">%deliverydrones_playername_&lt;uuid&gt;%</code></td>
+                      <td className="text-muted-foreground text-sm">Player name from UUID</td>
+                    </tr>
+                    <tr>
+                      <td><code className="code-inline text-xs">%deliverydrones_player_name_&lt;uuid&gt;%</code></td>
+                      <td className="text-muted-foreground text-sm">Alias for playername</td>
+                    </tr>
+                    <tr>
+                      <td><code className="code-inline text-xs">%deliverydrones_name_&lt;uuid&gt;%</code></td>
+                      <td className="text-muted-foreground text-sm">Short form</td>
+                    </tr>
+                    <tr>
+                      <td><code className="code-inline text-xs">%deliverydrones_uuid_to_name_&lt;uuid&gt;%</code></td>
+                      <td className="text-muted-foreground text-sm">Explicit form</td>
                     </tr>
                   </tbody>
                 </table>
