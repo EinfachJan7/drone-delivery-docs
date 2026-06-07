@@ -114,16 +114,14 @@ function Home() {
   });
 
   const downloads = allDownloads.data?.total || 0;
-  const milestone = Math.floor(downloads / 100) * 100;
-  const isMilestone = milestone >= 100 && (downloads - milestone) <= 10;
   
-  const shownMilestoneRef = useRef<number | null>(null);
+  const showConfettiRef = useRef(false);
   const animationFrameIdRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!isMilestone || shownMilestoneRef.current === milestone) return;
+    if (downloads <= 0 || showConfettiRef.current) return;
 
-    shownMilestoneRef.current = milestone;
+    showConfettiRef.current = true;
     
     // Clean up any existing animation
     if (animationFrameIdRef.current !== null) {
@@ -133,7 +131,7 @@ function Home() {
     const colors = ['#4682b4', '#5f9ea0', '#87ceeb', '#87cefa', '#b0c4de', '#add8e6'];
     
     let iterations = 0;
-    const maxIterations = 20; // Limit iterations to prevent infinite loop
+    const maxIterations = 30; // More iterations for better effect
     
     const frame = () => {
       if (iterations >= maxIterations) {
@@ -142,17 +140,17 @@ function Home() {
       }
 
       confetti({
-        particleCount: 3,
-        startVelocity: 3,
+        particleCount: 5,
+        startVelocity: 5,
         ticks: 200,
         gravity: 0.5,
         origin: {
           x: Math.random(),
-          y: Math.random() * 0.2 - 0.2
+          y: Math.random() * 0.3 - 0.3
         },
         colors: colors,
         shapes: ['circle'],
-        scalar: Math.random() * 0.6 + 0.4,
+        scalar: Math.random() * 0.8 + 0.5,
         zIndex: 9999,
         disableForReducedMotion: true
       });
@@ -161,7 +159,8 @@ function Home() {
       animationFrameIdRef.current = requestAnimationFrame(frame);
     };
 
-    frame();
+    // Small delay for visual polish
+    setTimeout(frame, 500);
 
     return () => {
       if (animationFrameIdRef.current !== null) {
@@ -169,7 +168,7 @@ function Home() {
         animationFrameIdRef.current = null;
       }
     };
-  }, [isMilestone, milestone]);
+  }, [downloads]);
 
   return (
     <SiteLayout>
