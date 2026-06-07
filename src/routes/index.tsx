@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/Layout";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import confetti from "canvas-confetti";
 import {
   Rocket,
@@ -116,20 +116,36 @@ function Home() {
   const downloads = allDownloads.data?.total || 0;
   const milestone = Math.floor(downloads / 100) * 100;
   const isMilestone = milestone >= 100 && (downloads - milestone) <= 10;
+  
+  const shownMilestoneRef = useRef<number | null>(null);
+  const animationFrameIdRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!isMilestone) return;
+    if (!isMilestone || shownMilestoneRef.current === milestone) return;
 
-    let animationFrameId: number;
-    // Muted, non-neon blue colors
+    shownMilestoneRef.current = milestone;
+    
+    // Clean up any existing animation
+    if (animationFrameIdRef.current !== null) {
+      cancelAnimationFrame(animationFrameIdRef.current);
+    }
+
     const colors = ['#4682b4', '#5f9ea0', '#87ceeb', '#87cefa', '#b0c4de', '#add8e6'];
-
+    
+    let iterations = 0;
+    const maxIterations = 20; // Limit iterations to prevent infinite loop
+    
     const frame = () => {
+      if (iterations >= maxIterations) {
+        animationFrameIdRef.current = null;
+        return;
+      }
+
       confetti({
-        particleCount: 2,
-        startVelocity: 0,
-        ticks: 300,
-        gravity: 0.3,
+        particleCount: 3,
+        startVelocity: 3,
+        ticks: 200,
+        gravity: 0.5,
         origin: {
           x: Math.random(),
           y: Math.random() * 0.2 - 0.2
@@ -141,15 +157,19 @@ function Home() {
         disableForReducedMotion: true
       });
 
-      animationFrameId = requestAnimationFrame(frame);
+      iterations++;
+      animationFrameIdRef.current = requestAnimationFrame(frame);
     };
 
     frame();
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameIdRef.current !== null) {
+        cancelAnimationFrame(animationFrameIdRef.current);
+        animationFrameIdRef.current = null;
+      }
     };
-  }, [isMilestone]);
+  }, [isMilestone, milestone]);
 
   return (
     <SiteLayout>
