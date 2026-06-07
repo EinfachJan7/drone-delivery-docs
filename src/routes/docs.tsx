@@ -202,7 +202,15 @@ const configKeys = [
   { key: "settings.drone.launch-animation.sound", desc: "Sound effect played upon drone launch." },
   { key: "settings.drone.launch-animation.sound-volume", desc: "Volume of the launch sound effect." },
   { key: "launch-animation.seconds", desc: "Duration of launch animation in seconds. Overrides startup-seconds for animation only." },
-  { key: "discord.*", desc: "Detailed discord webhook settings (username, avatar, embed colors, item/animal display limits)." },
+  { key: "discord.enabled", desc: "Enable or disable Discord webhook integration." },
+  { key: "discord.webhook-url", desc: "The URL of the Discord webhook." },
+  { key: "discord.username", desc: "Username for the webhook bot. Default: Delivery Drone." },
+  { key: "discord.avatar-url", desc: "Avatar URL for the webhook bot." },
+  { key: "discord.embed.enabled", desc: "Use rich embeds for messages. If false, sends simple text." },
+  { key: "discord.embed.color", desc: "Hex color for the embed border. Default: #00ff00." },
+  { key: "discord.include-items", desc: "Include a list of sent items in the notification." },
+  { key: "discord.include-animals", desc: "Include a list of sent animals in the notification." },
+  { key: "discord.max-items-display", desc: "Maximum number of item types to display before adding '...'." },
   { key: "custom-model.provider", desc: "Drone model provider: NONE (default player skull), NEXO, ORAXEN, or ITEMSADDER. Requires plugin installed if not NONE." },
   { key: "custom-model.item-id", desc: "Item ID for custom drone model when provider is not NONE. Example: 'nexo:custom_drone'. Must exist in provider plugin." },
   { key: "glowing-enabled", desc: "Enable entity outline glow effect on drone (makes it glow through walls). When disabled, drone is not outlined." },
@@ -550,6 +558,35 @@ function DocsPage() {
                   <p className="text-sm text-muted-foreground">
                     Many GUIs (like Player Selection or Socket Selection) use template items (e.g., <code className="code-inline">player-head-item</code> or <code className="code-inline">socket-item-format</code>) that define how dynamic entries are displayed. You can use placeholders like <code className="code-inline">&lt;player&gt;</code>, <code className="code-inline">&lt;name&gt;</code>, or <code className="code-inline">&lt;owner&gt;</code> directly in these formats.
                   </p>
+                  
+                  <h4 className="mt-4 font-medium mb-2">NBT Mob Sending Variables</h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    When using the <code className="code-inline">mob-sending</code> GUI, you can access dozens of NBT properties in <code className="code-inline">animal-item.lore</code> and <code className="code-inline">animal-item.selected-lore</code> to display precise information about the animal:
+                  </p>
+                  <ul className="list-disc list-inside text-xs text-muted-foreground grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-1">
+                    <li><code className="code-inline">&lt;type&gt;</code>, <code className="code-inline">&lt;custom-name&gt;</code></li>
+                    <li><code className="code-inline">&lt;health&gt;</code>, <code className="code-inline">&lt;max-health&gt;</code></li>
+                    <li><code className="code-inline">&lt;speed&gt;</code>, <code className="code-inline">&lt;jump&gt;</code>, <code className="code-inline">&lt;size&gt;</code></li>
+                    <li><code className="code-inline">&lt;color&gt;</code>, <code className="code-inline">&lt;variant&gt;</code></li>
+                    <li><code className="code-inline">&lt;profession&gt;</code>, <code className="code-inline">&lt;age&gt;</code></li>
+                    <li><code className="code-inline">&lt;owner&gt;</code>, <code className="code-inline">&lt;saddled&gt;</code></li>
+                    <li><code className="code-inline">&lt;sheared&gt;</code>, <code className="code-inline">&lt;sitting&gt;</code></li>
+                    <li><code className="code-inline">&lt;anger&gt;</code>, <code className="code-inline">&lt;awake&gt;</code></li>
+                    <li><code className="code-inline">&lt;trusting&gt;</code>, <code className="code-inline">&lt;sleeping&gt;</code></li>
+                    <li><code className="code-inline">&lt;crouching&gt;</code>, <code className="code-inline">&lt;powered&gt;</code></li>
+                    <li><code className="code-inline">&lt;charged&gt;</code>, <code className="code-inline">&lt;ignited&gt;</code></li>
+                    <li><code className="code-inline">&lt;shivering&gt;</code>, <code className="code-inline">&lt;drinking-potion&gt;</code></li>
+                    <li><code className="code-inline">&lt;panda-main-gene&gt;</code>, <code className="code-inline">&lt;has-egg&gt;</code></li>
+                    <li><code className="code-inline">&lt;carried-block&gt;</code>, <code className="code-inline">&lt;derp&gt;</code></li>
+                    <li><code className="code-inline">&lt;left-horn&gt;</code>, <code className="code-inline">&lt;right-horn&gt;</code></li>
+                    <li><code className="code-inline">&lt;tropical-pattern&gt;</code>, <code className="code-inline">&lt;zombie-baby&gt;</code></li>
+                    <li><code className="code-inline">&lt;villager-type&gt;</code>, <code className="code-inline">&lt;can-breed&gt;</code></li>
+                    <li><code className="code-inline">&lt;domestication&gt;</code>, <code className="code-inline">&lt;anger-level&gt;</code></li>
+                    <li><code className="code-inline">&lt;immune-to-zombification&gt;</code></li>
+                    <li><code className="code-inline">&lt;patrol-leader&gt;</code>, <code className="code-inline">&lt;can-duplicate&gt;</code></li>
+                    <li><code className="code-inline">&lt;sniffer-state&gt;</code>, <code className="code-inline">&lt;dragon-phase&gt;</code></li>
+                    <li><code className="code-inline">&lt;villager-level&gt;</code>, <code className="code-inline">&lt;villager-experience&gt;</code></li>
+                  </ul>
                 </div>
               </div>
             </div>
