@@ -65,7 +65,7 @@ const features = [
   {
     icon: Cat,
     title: "Animal transport",
-    desc: "Send leashed animals between players. Invulnerable in transit, respawned at delivery.",
+    desc: "Send animals via GUI. Radius-based selection with full NBT persistence. Invulnerable in transit.",
   },
   {
     icon: Webhook,
@@ -115,65 +115,38 @@ function Home() {
 
   const downloads = allDownloads.data?.total || 0;
   const milestone = Math.floor(downloads / 100) * 100;
-  const isMilestone = milestone >= 100;
-  
-  // Debug logging
-  useEffect(() => {
-    console.log("Download stats:", {
-      total: allDownloads.data?.total,
-      modrinth: allDownloads.data?.modrinth,
-      hangar: allDownloads.data?.hangar,
-      spigot: allDownloads.data?.spigot,
-      isLoading: allDownloads.isLoading,
-      error: allDownloads.error
-    });
-  }, [allDownloads.data, allDownloads.isLoading]);
+  const isMilestone = milestone >= 100 && (downloads - milestone) <= 10;
 
   useEffect(() => {
     if (!isMilestone) return;
 
     let animationFrameId: number;
-    let isRunning = true;
     // Muted, non-neon blue colors
     const colors = ['#4682b4', '#5f9ea0', '#87ceeb', '#87cefa', '#b0c4de', '#add8e6'];
 
     const frame = () => {
-      if (!isRunning) return;
-      
-      try {
-        confetti({
-          particleCount: 2,
-          startVelocity: 0,
-          ticks: 300,
-          gravity: 0.3,
-          origin: {
-            x: Math.random(),
-            y: Math.random() * 0.2 - 0.2
-          },
-          colors: colors,
-          shapes: ['circle'],
-          scalar: Math.random() * 0.6 + 0.4,
-          zIndex: 9999,
-          disableForReducedMotion: true
-        });
-      } catch (error) {
-        console.warn("Confetti animation error:", error);
-        isRunning = false;
-        return;
-      }
+      confetti({
+        particleCount: 2,
+        startVelocity: 0,
+        ticks: 300,
+        gravity: 0.3,
+        origin: {
+          x: Math.random(),
+          y: Math.random() * 0.2 - 0.2
+        },
+        colors: colors,
+        shapes: ['circle'],
+        scalar: Math.random() * 0.6 + 0.4,
+        zIndex: 9999,
+        disableForReducedMotion: true
+      });
 
       animationFrameId = requestAnimationFrame(frame);
     };
 
-    // Ensure confetti library is initialized on mobile
-    try {
-      frame();
-    } catch (error) {
-      console.warn("Failed to initialize confetti:", error);
-    }
+    frame();
 
     return () => {
-      isRunning = false;
       cancelAnimationFrame(animationFrameId);
     };
   }, [isMilestone]);

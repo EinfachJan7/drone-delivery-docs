@@ -167,6 +167,11 @@ const configKeys = [
   { key: "settings.drone.max-sockets-per-player", desc: "Max socket count per player. Default 3. Player cannot place more sockets once limit reached. Affects storage &amp; memory usage." },
   { key: "settings.drone.max-leashed-animals-per-drone", desc: "Max animals per drone delivery. Default 5. If set to 0, animal transport disabled entirely." },
   { key: "settings.drone.carry-leashed-animals", desc: "Enable/disable animal transport feature entirely. When false, animal selection GUI hidden from compose flow." },
+  { key: "settings.drone.animal-return-mode", desc: "How aborted animal deliveries return to the sender: FLY or TELEPORT." },
+  { key: "settings.drone.mob-sending.enabled", desc: "Enable animal selection GUI for picking animals nearby." },
+  { key: "settings.drone.mob-sending.radius", desc: "Radius in blocks to detect animals around the sender." },
+  { key: "settings.drone.mob-sending.leashable-only", desc: "If true, only leashable animals (e.g. cows, pigs) are shown in GUI." },
+  { key: "settings.drone.mob-sending.persist-nbt-data", desc: "If true, keeps precise NBT data (color, name, health, etc.) during transit." },
   { key: "settings.drone.follow-gliding-player", desc: "Enable elytra-glide following. When enabled, drone tracks player during elytra flight with +5 block Y-offset." },
   { key: "settings.drone.follow-airborne-player-before-landing", desc: "Enable airborne follow. When enabled, drone tracks airborne receiver before first ground contact (fallfollow)." },
   { key: "settings.drone.airborne-follow-min-height", desc: "Min height above ground to trigger airborne follow in blocks. Default 5. Players below this height won't trigger follow." },
@@ -334,7 +339,7 @@ function DocsPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-sm sm:text-base">🐾 Animal Transport</h3>
-                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">Send leashed animals via GUI. Invulnerable in transit, respawned at destination. Configurable max per drone.</p>
+                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">Send animals via GUI. Radius-based selection with full NBT persistence. Invulnerable in transit, respawned at destination. Configurable max per drone.</p>
                   </div>
                 </div>
                 <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6">
