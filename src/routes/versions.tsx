@@ -50,13 +50,16 @@ function VersionsPage() {
 
   return (
     <SiteLayout>
-      <section className="container-page py-16">
+      <section className="container-page py-16 relative">
+        {/* Decorative background glow */}
+        <div className="absolute top-10 right-10 -z-10 h-64 w-64 rounded-full bg-[var(--brand-glow)] opacity-10 blur-[100px] pointer-events-none" />
+        
         <div className="flex flex-wrap items-end justify-between gap-6">
-          <div>
+          <div className="relative z-10">
             <span className="badge-soft">
               <Package className="h-3.5 w-3.5" /> Version history
             </span>
-            <h1 className="mt-4 text-3xl font-bold tracking-tight md:text-4xl">
+            <h1 className="mt-4 text-3xl font-bold tracking-tight md:text-5xl">
               All releases
             </h1>
             <p className="mt-3 max-w-2xl text-muted-foreground">
@@ -85,15 +88,35 @@ function VersionsPage() {
           </div>
         )}
 
-        <div className="mt-10 space-y-4">
+        <div className="mt-16">
           {versions.isLoading ? (
-            <div className="flex items-center justify-center rounded-lg border border-border bg-card/50 py-12">
-              <div className="text-sm text-muted-foreground">Loading versions…</div>
+            <div className="space-y-10 relative border-l-2 border-white/10 ml-4 pl-8 md:ml-8 md:pl-12">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="relative">
+                  <div className="absolute -left-[41px] md:-left-[57px] top-4 h-4 w-4 rounded-full bg-white/10 ring-4 ring-background" />
+                  <div className="card-surface p-6 animate-pulse">
+                    <div className="flex justify-between items-start">
+                      <div className="flex gap-3 items-center">
+                        <div className="h-6 w-24 bg-white/10 rounded"></div>
+                        <div className="h-5 w-16 bg-white/10 rounded-full"></div>
+                      </div>
+                      <div className="h-8 w-24 bg-white/10 rounded-md"></div>
+                    </div>
+                    <div className="mt-4 h-4 w-64 bg-white/5 rounded"></div>
+                    <div className="mt-4 flex gap-2">
+                      <div className="h-6 w-16 bg-white/5 rounded-full"></div>
+                      <div className="h-6 w-20 bg-white/5 rounded-full"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : versions.data && versions.data.length > 0 ? (
-            versions.data.map((version) => (
-              <VersionCard key={version.id} version={version} />
-            ))
+            <div className="space-y-12 relative border-l-2 border-white/10 ml-4 pl-8 md:ml-8 md:pl-12">
+              {versions.data.map((version) => (
+                <VersionCard key={version.id} version={version} />
+              ))}
+            </div>
           ) : (
             <div className="flex items-center justify-center rounded-lg border border-border bg-card/50 py-12">
               <div className="text-sm text-muted-foreground">No versions found</div>
@@ -128,25 +151,34 @@ function VersionCard({ version }: { version: ModrinthVersion }) {
   })();
 
   return (
-    <div className="card-surface overflow-hidden p-6">
-      <div
-        className="flex cursor-pointer items-start justify-between gap-4"
-        onClick={toggleExpanded}
-      >
-        <div className="flex-1">
-          <div className="flex items-center gap-3">
-            <h3 className="text-lg font-semibold">{version.version_number}</h3>
-            {version.featured && (
-              <span className="rounded-full bg-[var(--color-accent)] px-2 py-0.5 text-xs font-medium text-[var(--brand-glow)]">
-                Featured
-              </span>
-            )}
-            <span className="rounded-full bg-zinc-900 px-2 py-0.5 text-xs font-medium text-muted-foreground">
+    <div className="relative group">
+      {/* Timeline Node */}
+      <div className={`absolute -left-[41px] md:-left-[57px] top-6 h-4 w-4 rounded-full ring-4 ring-background transition-colors duration-300 ${version.featured ? 'bg-[var(--brand-glow)] shadow-[0_0_15px_var(--brand-glow)]' : 'bg-white/20 group-hover:bg-white/40'}`} />
+      
+      {/* Date Indicator (Optional Desktop Only) */}
+      <div className="hidden lg:block absolute -left-[200px] top-5 text-sm text-muted-foreground font-medium w-[120px] text-right">
+        {publishDate}
+      </div>
+
+      <div className={`card-surface overflow-hidden p-6 transition-all duration-300 hover:border-[var(--color-ring)]/50 hover:shadow-[0_4px_30px_-10px_rgba(0,0,0,0.5)] ${version.featured ? 'border-[var(--brand-glow)]/30' : ''}`}>
+        <div
+          className="flex cursor-pointer items-start justify-between gap-4"
+          onClick={toggleExpanded}
+        >
+          <div className="flex-1">
+            <div className="flex flex-wrap items-center gap-3">
+              <h3 className="text-xl font-bold">{version.version_number}</h3>
+              {version.featured && (
+                <span className="rounded-full bg-[var(--color-accent)] px-2.5 py-0.5 text-xs font-semibold text-[var(--brand-glow)] uppercase tracking-wider">
+                  Featured
+                </span>
+              )}
+            <span className="rounded-full bg-zinc-900/80 border border-white/5 px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
               {version.status}
             </span>
           </div>
-          <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1.5">
+          <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1.5 lg:hidden">
               <Calendar className="h-4 w-4" />
               {publishDate}
             </div>
@@ -203,10 +235,10 @@ function VersionCard({ version }: { version: ModrinthVersion }) {
                e.stopPropagation();
                toggleExpanded();
              }}
-             className="rounded-lg p-2 hover:bg-zinc-900"
+             className="rounded-lg p-2 bg-zinc-900/50 hover:bg-[var(--color-accent)] transition-colors"
            >
             <ChevronDown
-              className={`h-5 w-5 transition-transform ${expanded ? "rotate-180" : ""}`}
+              className={`h-5 w-5 transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
             />
           </button>
         </div>
@@ -311,6 +343,7 @@ function VersionCard({ version }: { version: ModrinthVersion }) {
           )}
         </div>
       )}
+      </div>
     </div>
   );
 }

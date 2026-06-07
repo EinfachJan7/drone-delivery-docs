@@ -290,31 +290,57 @@ function DocsPage() {
           </div>
         </header>
 
-        {/* Tab Navigation */}
-        <div className="mb-6 sm:mb-8 border-b border-white/10 overflow-x-auto">
-          <div className="flex flex-nowrap gap-1">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 rounded-t-md px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition whitespace-nowrap ${
-                    activeTab === tab.id
-                      ? "border-b-2 border-[var(--color-accent)] bg-white/5 text-foreground"
-                      : "text-muted-foreground hover:bg-white/5"
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  <span className="hidden sm:inline">{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        {/* Main Grid Layout */}
+        <div className="flex flex-col md:flex-row gap-8 lg:gap-16 items-start mt-8">
+          
+          {/* Desktop Sidebar Navigation */}
+          <aside className="hidden md:block w-56 shrink-0 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto pr-4">
+            <nav className="flex flex-col gap-1.5">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-all ${
+                      activeTab === tab.id
+                        ? "bg-[var(--color-accent)] text-[var(--brand-glow)] shadow-[0_0_15px_rgba(0,0,0,0.2)]"
+                        : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+          </aside>
 
-        {/* Tab Content */}
-        <div className="animate-in fade-in duration-200">
+          {/* Mobile Tab Navigation */}
+          <div className="md:hidden sticky top-14 z-30 mb-6 sm:mb-8 border-b border-white/10 bg-background/80 backdrop-blur-xl pt-2 pb-0 overflow-x-auto -mx-4 px-4 w-[100vw]">
+            <div className="flex flex-nowrap gap-1">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-2 rounded-t-md px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition whitespace-nowrap ${
+                      activeTab === tab.id
+                        ? "border-b-2 border-[var(--color-accent)] bg-white/5 text-foreground"
+                        : "text-muted-foreground hover:bg-white/5"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Tab Content Area */}
+          <div className="flex-1 min-w-0 w-full animate-in fade-in duration-300 slide-in-from-bottom-2">
           {/* Features */}
           {activeTab === "features" && (
             <div>
@@ -323,7 +349,7 @@ function DocsPage() {
                 {features.map((feature) => {
                   const Icon = feature.icon;
                   return (
-                    <div key={feature.title} className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6">
+                    <div key={feature.title} className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6 transition-all duration-300 hover:border-[var(--brand-glow)]/40 hover:shadow-[0_0_30px_-10px_var(--brand-glow)]">
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-accent)]/20">
                         <Icon className="h-5 w-5 text-[var(--color-accent)]" />
                       </div>
@@ -335,7 +361,7 @@ function DocsPage() {
                   );
                 })}
                 {/* Additional Features */}
-                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6">
+                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6 transition-all duration-300 hover:border-[var(--brand-glow)]/40 hover:shadow-[0_0_30px_-10px_var(--brand-glow)]">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-accent)]/20">
                     <Sparkles className="h-5 w-5 text-[var(--color-accent)]" />
                   </div>
@@ -344,7 +370,7 @@ function DocsPage() {
                     <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">Drone tracks gliding receivers (+5 Y-offset) &amp; airborne players (&gt;5 blocks high). Dynamic relocation on ground contact.</p>
                   </div>
                 </div>
-                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6">
+                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6 transition-all duration-300 hover:border-[var(--brand-glow)]/40 hover:shadow-[0_0_30px_-10px_var(--brand-glow)]">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-accent)]/20">
                     <Sparkles className="h-5 w-5 text-[var(--color-accent)]" />
                   </div>
@@ -353,7 +379,7 @@ function DocsPage() {
                     <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">Send animals via GUI. Radius-based selection with full NBT persistence. Invulnerable in transit, respawned at destination. Configurable max per drone.</p>
                   </div>
                 </div>
-                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6">
+                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6 transition-all duration-300 hover:border-[var(--brand-glow)]/40 hover:shadow-[0_0_30px_-10px_var(--brand-glow)]">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-accent)]/20">
                     <Sparkles className="h-5 w-5 text-[var(--color-accent)]" />
                   </div>
@@ -362,7 +388,7 @@ function DocsPage() {
                     <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">Real-time webhook notifications for sent, delivered, declined &amp; expired drones with rich embeds.</p>
                   </div>
                 </div>
-                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6">
+                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6 transition-all duration-300 hover:border-[var(--brand-glow)]/40 hover:shadow-[0_0_30px_-10px_var(--brand-glow)]">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-accent)]/20">
                     <Sparkles className="h-5 w-5 text-[var(--color-accent)]" />
                   </div>
@@ -371,7 +397,7 @@ function DocsPage() {
                     <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">Main menu, player/socket selection, socket edit with sign rename. Live reload with /drone reload.</p>
                   </div>
                 </div>
-                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6">
+                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6 transition-all duration-300 hover:border-[var(--brand-glow)]/40 hover:shadow-[0_0_30px_-10px_var(--brand-glow)]">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-accent)]/20">
                     <Sparkles className="h-5 w-5 text-[var(--color-accent)]" />
                   </div>
@@ -380,7 +406,7 @@ function DocsPage() {
                     <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">UUID-based tracking with YAML storage. Server restart returns items to senders &amp; cleans orphaned entities.</p>
                   </div>
                 </div>
-                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6">
+                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6 transition-all duration-300 hover:border-[var(--brand-glow)]/40 hover:shadow-[0_0_30px_-10px_var(--brand-glow)]">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-accent)]/20">
                     <Sparkles className="h-5 w-5 text-[var(--color-accent)]" />
                   </div>
@@ -389,7 +415,7 @@ function DocsPage() {
                     <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">/drone locate shows particle trail to nearest drone. Displays sender name, distance &amp; coordinates.</p>
                   </div>
                 </div>
-                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6">
+                <div className="card-surface space-y-2 sm:space-y-3 p-4 sm:p-6 transition-all duration-300 hover:border-[var(--brand-glow)]/40 hover:shadow-[0_0_30px_-10px_var(--brand-glow)]">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-accent)]/20">
                     <Sparkles className="h-5 w-5 text-[var(--color-accent)]" />
                   </div>
@@ -398,7 +424,7 @@ function DocsPage() {
                     <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">Hologram shows recipient name &amp; live despawn countdown. Boss bar displays distance &amp; ETA.</p>
                   </div>
                 </div>
-                <div className="card-surface space-y-3 p-6">
+                <div className="card-surface space-y-3 p-6 transition-all duration-300 hover:border-[var(--brand-glow)]/40 hover:shadow-[0_0_30px_-10px_var(--brand-glow)]">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-accent)]/20">
                     <Sparkles className="h-5 w-5 text-[var(--color-accent)]" />
                   </div>
@@ -421,7 +447,7 @@ function DocsPage() {
                 {commandGroups.map((group) => (
                   <div key={group.title}>
                     <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">{group.title}</h3>
-                    <div className="card-surface overflow-x-auto">
+                    <div className="card-surface overflow-x-auto transition-all hover:border-white/20">
                       <table className="table-docs">
                         <thead>
                           <tr>
@@ -452,7 +478,7 @@ function DocsPage() {
             <div>
               <h2 className="mb-4 sm:mb-6 text-2xl sm:text-3xl font-bold">Permissions</h2>
               <p className="mb-4 sm:mb-6 text-xs sm:text-sm text-muted-foreground">Hierarchical permission tree. Parent nodes grant all children.</p>
-              <div className="card-surface overflow-x-auto">
+              <div className="card-surface overflow-x-auto transition-all hover:border-white/20">
                 <table className="table-docs">
                   <thead>
                     <tr>
@@ -480,7 +506,7 @@ function DocsPage() {
             <div>
               <h2 className="mb-4 sm:mb-6 text-2xl sm:text-3xl font-bold">Configuration</h2>
               <p className="mb-4 sm:mb-6 text-xs sm:text-sm text-muted-foreground">All behavior in <code className="code-inline">config.yml</code>. GUIs in <code className="code-inline">gui.yml</code>. Use <code className="code-inline">/drone reload</code> to apply changes.</p>
-              <div className="card-surface overflow-x-auto">
+              <div className="card-surface overflow-x-auto transition-all hover:border-white/20">
                 <table className="table-docs">
                   <thead>
                     <tr>
@@ -1510,8 +1536,9 @@ function DocsPage() {
               </div>
             </div>
           )}
-        </div>
-      </section>
-    </SiteLayout>
+        </div> {/* End Tab Content Area */}
+      </div> {/* End Main Grid Layout */}
+    </section>
+  </SiteLayout>
   );
 }
