@@ -136,13 +136,13 @@ function Home() {
       if (!isRunning) return;
       
       confetti({
-        particleCount: 1,
-        startVelocity: 0,
-        ticks: 150,
-        gravity: 0.1,
+        particleCount: 2,
+        startVelocity: 2,
+        ticks: 300,
+        gravity: 0.2,
         origin: {
           x: Math.random(),
-          y: -0.1
+          y: 0
         },
         colors: colors,
         shapes: ['circle'],
@@ -151,7 +151,7 @@ function Home() {
         disableForReducedMotion: true
       });
 
-      timeoutIdRef.current = setTimeout(shootConfetti, 50);
+      timeoutIdRef.current = setTimeout(shootConfetti, 100);
     };
 
     // Start after small delay
