@@ -162,14 +162,14 @@ function Home() {
         />
         <div className="container-page py-24 md:py-32">
           <div className="mx-auto max-w-3xl text-center">
-            {isMilestone && (
+            {downloads > 0 && (
               <div className="mb-8 animate-in fade-in slide-in-from-top-4 duration-1000">
                 <div className="card-surface mx-auto inline-flex items-center gap-3 border border-[var(--color-border)] px-6 py-3 shadow-sm transition-all">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--color-accent)]">
                     <Rocket className="h-4 w-4 text-foreground" />
                   </div>
                   <span className="text-sm font-medium tracking-wide text-foreground">
-                    Thank you for <span className="font-bold">{milestone}</span> downloads!
+                    Thank you for <span className="font-bold">{downloads.toLocaleString()}</span> downloads!
                   </span>
                 </div>
               </div>
