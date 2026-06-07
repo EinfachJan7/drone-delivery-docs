@@ -19,7 +19,9 @@ import {
   Activity,
   Server,
   Users,
+  ChevronDown,
 } from "lucide-react";
+import * as Accordion from "@radix-ui/react-accordion";
 import { useQuery } from "@tanstack/react-query";
 import { fetchBstatsLatest } from "@/lib/bstats";
 import { fetchLatestVersion, fetchDownloadStats } from "@/lib/versions";
@@ -136,10 +138,10 @@ function Home() {
       if (!isRunning) return;
       
       confetti({
-        particleCount: 5,
-        startVelocity: 5,
+        particleCount: 3,
+        startVelocity: 4,
         ticks: 300,
-        gravity: 0.8,
+        gravity: 0.5,
         origin: {
           x: Math.random(),
           y: 0
@@ -151,7 +153,7 @@ function Home() {
         disableForReducedMotion: true
       });
 
-      timeoutIdRef.current = setTimeout(shootConfetti, 50);
+      timeoutIdRef.current = setTimeout(shootConfetti, 100);
     };
 
     // Start after small delay
@@ -177,6 +179,16 @@ function Home() {
           style={{ background: "var(--gradient-hero)" }}
           aria-hidden
         />
+        {/* Floating background elements */}
+        <div className="absolute top-20 left-[10%] hidden animate-float opacity-50 md:block" style={{ animationDelay: '0s' }}>
+          <Rocket className="h-12 w-12 text-primary drop-shadow-lg" />
+        </div>
+        <div className="absolute top-40 right-[15%] hidden animate-float opacity-40 md:block" style={{ animationDelay: '1.5s' }}>
+          <Boxes className="h-16 w-16 text-brand drop-shadow-lg" />
+        </div>
+        <div className="absolute bottom-10 left-[20%] hidden animate-float opacity-30 md:block" style={{ animationDelay: '3s' }}>
+          <Settings2 className="h-10 w-10 text-accent drop-shadow-lg" />
+        </div>
         <div className="container-page py-24 md:py-32">
           <div className="mx-auto max-w-3xl text-center">
             {downloads > 0 && (
@@ -312,6 +324,50 @@ plugins/AdvancedDeliveryDrones-1.0.7.jar
 /drone reload`}
             </pre>
           </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="container-page py-20 mb-10">
+        <div className="mx-auto max-w-2xl text-center mb-10">
+          <h2 className="text-3xl font-bold tracking-tight">Frequently Asked Questions</h2>
+          <p className="mt-4 text-muted-foreground">Got questions? We've got answers.</p>
+        </div>
+        <div className="mx-auto max-w-3xl">
+          <Accordion.Root type="single" collapsible className="space-y-4 w-full">
+            {[
+              {
+                q: "Is it compatible with Geyser/Bedrock?",
+                a: "Yes! The GUI and the drones render perfectly for Bedrock players via Geyser.",
+              },
+              {
+                q: "Can drones be shot down or stolen?",
+                a: "No, drones are completely invulnerable during transit to ensure packages are delivered safely without griefing.",
+              },
+              {
+                q: "Does it cause lag on big servers?",
+                a: "Advanced Delivery Drones is heavily optimized. It pre-computes paths and throttles rendering, making it perfectly safe for servers with hundreds of players.",
+              },
+              {
+                q: "Can I customize the items in the GUI?",
+                a: "Absolutely. Everything from titles, glass pane colors, to button items can be customized in the gui.yml.",
+              }
+            ].map((faq, i) => (
+              <Accordion.Item key={i} value={`item-${i}`} className="card-surface overflow-hidden border border-[var(--color-border)]">
+                <Accordion.Header className="flex">
+                  <Accordion.Trigger className="flex flex-1 items-center justify-between p-5 text-left font-medium transition-all hover:bg-[oklch(1_0_0/0.02)] [&[data-state=open]>svg]:rotate-180">
+                    {faq.q}
+                    <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" />
+                  </Accordion.Trigger>
+                </Accordion.Header>
+                <Accordion.Content className="overflow-hidden text-sm text-muted-foreground data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+                  <div className="p-5 pt-0">
+                    {faq.a}
+                  </div>
+                </Accordion.Content>
+              </Accordion.Item>
+            ))}
+          </Accordion.Root>
         </div>
       </section>
     </SiteLayout>
