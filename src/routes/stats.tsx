@@ -214,7 +214,7 @@ function StatsPage() {
         <p className="mt-2 text-sm text-muted-foreground">
           What the community is running Advanced Delivery Drones on.
         </p>
-        <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
           <PieCard
             title="Minecraft version"
             data={breakdowns.data?.minecraftVersion}
@@ -247,7 +247,7 @@ function StatsPage() {
         <p className="mt-2 text-sm text-muted-foreground">
           Total downloads across all distribution platforms.
         </p>
-        <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           <div className="card-surface p-6">
             <div className="text-xs uppercase tracking-wider text-muted-foreground">Modrinth</div>
             <div className="mt-4 text-3xl font-bold tabular-nums">
@@ -355,7 +355,7 @@ function SeriesCard({
   return (
     <div className="card-surface p-6">
       <h3 className="text-sm font-semibold">{title}</h3>
-      <div className="mt-4 h-56">
+      <div className="mt-4 h-48 sm:h-56">
         {loading ? (
           <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
             Loading…
@@ -376,7 +376,7 @@ function SeriesCard({
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
-                minTickGap={32}
+                minTickGap={40}
               />
               <YAxis
                 stroke="oklch(0.7 0.025 250)"
@@ -421,10 +421,11 @@ function PieCard({
   loading: boolean;
 }) {
   const empty = !loading && (!data || data.length === 0);
+  
   return (
     <div className="card-surface p-6">
       <h3 className="text-sm font-semibold">{title}</h3>
-      <div className="mt-2 h-60">
+      <div className="mt-2 h-48 sm:h-60">
         {loading ? (
           <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
             Loading…
@@ -440,8 +441,8 @@ function PieCard({
                 data={data}
                 dataKey="y"
                 nameKey="name"
-                innerRadius={48}
-                outerRadius={78}
+                innerRadius={32}
+                outerRadius={56}
                 paddingAngle={2}
                 stroke="oklch(0.16 0.025 255)"
               >

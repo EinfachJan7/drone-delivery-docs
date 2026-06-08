@@ -2,6 +2,36 @@
 const PLUGIN_ID = import.meta.env.VITE_BSTATS_PLUGIN_ID || "31663";
 const BSTATS_API = "https://bstats.org/api/v1/plugins";
 
+/**
+ * Fetch with retry logic for unstable networks (especially mobile)
+ */
+async function fetchWithRetry(url: string, options: RequestInit, maxRetries: number = 3): Promise<Response | null> {
+  let lastError: Error | null = null;
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+      // Only retry on network errors or 5xx, not on 4xx
+      if (response.ok || response.status < 500) {
+        return response;
+      }
+      lastError = new Error(`HTTP ${response.status}`);
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      
+      // Exponential backoff: wait before retrying
+      if (attempt < maxRetries - 1) {
+        const delay = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
+        console.log(`bStats attempt ${attempt + 1} failed, retrying in ${delay}ms...`, lastError);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  }
+  
+  console.error(`bStats fetch failed after ${maxRetries} attempts:`, lastError);
+  return null;
+}
+
 export interface BStatsLatest {
   servers: number;
   players: number;
@@ -64,14 +94,16 @@ const DEMO_BREAKDOWNS: BStatsBreakdowns = {
 
 export async function fetchBstatsLatest(): Promise<BStatsLatest> {
   try {
-    const response = await fetch(`${BSTATS_API}/${PLUGIN_ID}`, {
+    const response = await fetchWithRetry(`${BSTATS_API}/${PLUGIN_ID}`, {
       mode: 'cors',
+      signal: AbortSignal.timeout(15000),
       headers: {
         'Accept': 'application/json',
       },
     });
-    if (!response.ok) {
-      console.warn(`bStats API error: ${response.status}, using demo data`);
+    
+    if (!response?.ok) {
+      console.warn(`bStats API error, using demo data`);
       return DEMO_LATEST;
     }
 
@@ -89,11 +121,12 @@ export async function fetchBstatsLatest(): Promise<BStatsLatest> {
     // Fetch servers data
     if (serverChartId) {
       try {
-        const serverData = await fetch(`${BSTATS_API}/${PLUGIN_ID}/charts/servers/data`, {
+        const serverData = await fetchWithRetry(`${BSTATS_API}/${PLUGIN_ID}/charts/servers/data`, {
           mode: 'cors',
+          signal: AbortSignal.timeout(15000),
           headers: { 'Accept': 'application/json' },
         });
-        if (serverData.ok) {
+        if (serverData?.ok) {
           const serversArray = await serverData.json();
           if (Array.isArray(serversArray) && serversArray.length > 0) {
             servers = serversArray[serversArray.length - 1][1] || 0;
@@ -108,11 +141,12 @@ export async function fetchBstatsLatest(): Promise<BStatsLatest> {
     // Fetch players data
     if (playerChartId) {
       try {
-        const playerData = await fetch(`${BSTATS_API}/${PLUGIN_ID}/charts/players/data`, {
+        const playerData = await fetchWithRetry(`${BSTATS_API}/${PLUGIN_ID}/charts/players/data`, {
           mode: 'cors',
+          signal: AbortSignal.timeout(15000),
           headers: { 'Accept': 'application/json' },
         });
-        if (playerData.ok) {
+        if (playerData?.ok) {
           const playersArray = await playerData.json();
           if (Array.isArray(playersArray) && playersArray.length > 0) {
             players = playersArray[playersArray.length - 1][1] || 0;
@@ -138,14 +172,15 @@ export async function fetchBstatsLatest(): Promise<BStatsLatest> {
 
 export async function fetchBstatsBreakdowns(): Promise<BStatsBreakdowns> {
   try {
-    const response = await fetch(`${BSTATS_API}/${PLUGIN_ID}`, {
+    const response = await fetchWithRetry(`${BSTATS_API}/${PLUGIN_ID}`, {
       mode: 'cors',
+      signal: AbortSignal.timeout(15000),
       headers: {
         'Accept': 'application/json',
       },
     });
-    if (!response.ok) {
-      console.warn(`bStats API error: ${response.status}, using demo data`);
+    if (!response?.ok) {
+      console.warn(`bStats API error, using demo data`);
       return DEMO_BREAKDOWNS;
     }
 
@@ -160,11 +195,12 @@ export async function fetchBstatsBreakdowns(): Promise<BStatsBreakdowns> {
 
     for (const chartName of chartNames) {
       try {
-        const chartResponse = await fetch(`${BSTATS_API}/${PLUGIN_ID}/charts/${chartName}/data`, {
+        const chartResponse = await fetchWithRetry(`${BSTATS_API}/${PLUGIN_ID}/charts/${chartName}/data`, {
           mode: 'cors',
+          signal: AbortSignal.timeout(15000),
           headers: { 'Accept': 'application/json' },
         });
-        if (chartResponse.ok) {
+        if (chartResponse?.ok) {
           const chartData = await chartResponse.json();
           console.log(`Chart ${chartName} data:`, chartData);
           
