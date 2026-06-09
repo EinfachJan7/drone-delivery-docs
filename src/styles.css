@@ -222,6 +222,91 @@
     color: var(--color-foreground);
   }
 
+  .roadmap-progress-panel {
+    background: var(--gradient-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-card);
+    padding: 1.75rem;
+    backdrop-filter: blur(6px);
+  }
+
+  @media (min-width: 768px) {
+    .roadmap-progress-panel {
+      padding: 2rem 2.25rem;
+    }
+  }
+
+  .roadmap-progress-track {
+    height: 0.75rem;
+    border-radius: 999px;
+    background: oklch(1 0 0 / 0.06);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+  }
+
+  .roadmap-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(
+      90deg,
+      oklch(0.7 0.18 160) 0%,
+      var(--brand) 55%,
+      var(--brand-glow) 100%
+    );
+    box-shadow: 0 0 24px -2px oklch(0.78 0.16 215 / 0.55);
+    transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .roadmap-card {
+    background: var(--gradient-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-card);
+    padding: 1.25rem;
+    height: 100%;
+    transition: border-color 0.2s ease, transform 0.15s ease;
+  }
+
+  .roadmap-card:hover {
+    transform: translateY(-1px);
+  }
+
+  .roadmap-card--completed {
+    border-color: oklch(0.7 0.18 160 / 25%);
+    background: linear-gradient(
+      180deg,
+      oklch(0.7 0.18 160 / 0.08) 0%,
+      oklch(0.2 0.028 256 / 0.6) 100%
+    );
+  }
+
+  .roadmap-card--completed:hover {
+    border-color: oklch(0.7 0.18 160 / 40%);
+  }
+
+  .roadmap-card--active {
+    border-color: oklch(0.78 0.16 215 / 30%);
+    background: linear-gradient(
+      180deg,
+      oklch(0.32 0.06 220 / 0.55) 0%,
+      oklch(0.2 0.028 256 / 0.6) 100%
+    );
+  }
+
+  .roadmap-card--active:hover {
+    border-color: oklch(0.78 0.16 215 / 50%);
+  }
+
+  .roadmap-card--planned {
+    opacity: 0.92;
+  }
+
+  .roadmap-group + .roadmap-group {
+    padding-top: 0.5rem;
+    border-top: 1px solid oklch(1 0 0 / 0.06);
+  }
+
   .badge-soft {
     display: inline-flex;
     align-items: center;

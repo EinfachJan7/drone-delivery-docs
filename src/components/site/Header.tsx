@@ -4,6 +4,7 @@ import { Package, Github, MessageCircle } from "lucide-react";
 const nav = [
   { to: "/", label: "Home" },
   { to: "/docs", label: "Docs" },
+  { to: "/roadmap", label: "Roadmap" },
   { to: "/versions", label: "Versions" },
   { to: "/stats", label: "Live Stats" },
 ];

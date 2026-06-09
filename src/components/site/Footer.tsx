@@ -62,6 +62,7 @@ export function Footer() {
                 </a>
               </li>
               <li><Link to="/stats" className="nav-link">Live Stats</Link></li>
+              <li><Link to="/roadmap" className="nav-link">Roadmap</Link></li>
             </ul>
           </div>
         </div>
