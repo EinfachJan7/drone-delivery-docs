@@ -45,6 +45,13 @@ export const ROADMAP_ITEMS: RoadmapItem[] = [
     targetVersion: "1.1.3",
   },
   {
+    id: "Folia-Support",
+    title: "Folia Support",
+    description: "Add support for Folia.",
+    status: "planned",
+    targetVersion: "1.1.4",
+  },
+  {
     id: "Live-Maps-Hook",
     title: "Live Maps Integration",
     description: "Add hooks for Live Maps plugin. Such as Bluemap, Dynmap, etc.",
