@@ -62,8 +62,8 @@ export const ROADMAP_ITEMS: RoadmapItem[] = [
     id: "Drone-Item-Blacklist",
     title: "Drone Item Blacklist",
     description: "Add a blacklist for items that cannot be sent by drones into the config.This is for server owners who don't want to allow certain items to be sent by drones.",
-    status: "planned",
-    targetVersion: "1.1.5",
+    status: "completed",
+    targetVersion: "1.1.3",
   },
   {
     id: "Even-More-Placeholders",
@@ -83,7 +83,7 @@ export const ROADMAP_ITEMS: RoadmapItem[] = [
     id: "Mob-Blacklist",
     title: "Mob Blacklist for the Mob drones",
     description: "Add a blacklist for mobs that cannot be sent by mob drones into the config. This is for server owners who don't want to allow certain mobs to be sent by mob drones.",
-    status: "planned",
+    status: "completed",
     targetVersion: "1.1.3",
   },
 ];
