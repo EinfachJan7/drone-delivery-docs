@@ -19,7 +19,6 @@ export type RoadmapItem = {
 };
 
 export const ROADMAP_ITEMS: RoadmapItem[] = [
-  // ── Shipped ─────────────────────────────────────────────
   {
     id: "Mobtransport-rewrite",
     title: "Drone Mob Transport update",
@@ -27,8 +26,6 @@ export const ROADMAP_ITEMS: RoadmapItem[] = [
     status: "completed",
     targetVersion: "1.1.2",
   },
-
-  // ── In progress ───────────────────────────────────────────
   {
     id: "-",
     title: "-",
@@ -36,12 +33,11 @@ export const ROADMAP_ITEMS: RoadmapItem[] = [
     status: "",
     targetVersion: "2.2.2",
   },
-  // ── Planned ─────────────────────────────────────────────
   {
     id: "Worldguard-Hook",
     title: "Worldguard Hook",
     description: "Add custom flags for worldguard regions.",
-    status: "planned",
+    status: "in-progress",
     targetVersion: "1.1.3",
   },
   {
