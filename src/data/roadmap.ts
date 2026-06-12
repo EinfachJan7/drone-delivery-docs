@@ -37,14 +37,14 @@ export const ROADMAP_ITEMS: RoadmapItem[] = [
     id: "Worldguard-Hook",
     title: "Worldguard Hook",
     description: "Add custom flags for worldguard regions.",
-    status: "in-progress",
+    status: "completed",
     targetVersion: "1.1.3",
   },
   {
     id: "Folia-Support",
     title: "Folia Support",
     description: "Add support for Folia.",
-    status: "planned",
+    status: "in-progress",
     targetVersion: "1.1.4",
   },
   {
