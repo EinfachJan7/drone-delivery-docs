@@ -44,8 +44,8 @@ export const ROADMAP_ITEMS: RoadmapItem[] = [
     id: "Folia-Support",
     title: "Folia Support",
     description: "Add support for Folia.",
-    status: "in-progress",
-    targetVersion: "1.1.4",
+    status: "planned",
+    targetVersion: "1.2.0",
   },
   {
     id: "Live-Maps-Hook",
@@ -66,14 +66,14 @@ export const ROADMAP_ITEMS: RoadmapItem[] = [
     title: "More Placeholders",
     description: "Add even more placeholders for the plugin.",
     status: "planned",
-    targetVersion: "1.1.6",
+    targetVersion: "1.1.4",
   },
   {
     id: "Custom-Item-support-for-the-guis",
     title: "Custom item support for the drone guis",
     description: "Allow server owners to use their own custom items for the drone guis.",
     status: "planned",
-    targetVersion: "1.1.6",
+    targetVersion: "1.1.5",
   },
   {
     id: "Mob-Blacklist",
