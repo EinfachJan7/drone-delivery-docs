@@ -51,7 +51,7 @@ export const ROADMAP_ITEMS: RoadmapItem[] = [
     id: "Live-Maps-Hook",
     title: "Live Maps Integration",
     description: "Add hooks for Live Maps plugin. Such as Bluemap, Dynmap, etc.",
-    status: "planned",
+    status: "completed",
     targetVersion: "1.1.4",
   },
   {
@@ -65,14 +65,14 @@ export const ROADMAP_ITEMS: RoadmapItem[] = [
     id: "Even-More-Placeholders",
     title: "More Placeholders",
     description: "Add even more placeholders for the plugin.",
-    status: "planned",
-    targetVersion: "1.1.4",
+    status: "completed",
+    targetVersion: "1.1.3",
   },
   {
     id: "Custom-Item-support-for-the-guis",
     title: "Custom item support for the drone guis",
     description: "Allow server owners to use their own custom items for the drone guis.",
-    status: "planned",
+    status: "in-progress",
     targetVersion: "1.1.5",
   },
   {
