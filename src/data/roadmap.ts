@@ -72,8 +72,8 @@ export const ROADMAP_ITEMS: RoadmapItem[] = [
     id: "Custom-Item-support-for-the-guis",
     title: "Custom item support for the drone guis",
     description: "Allow server owners to use their own custom items for the drone guis.",
-    status: "in-progress",
-    targetVersion: "1.1.5",
+    status: "completed",
+    targetVersion: "1.1.4",
   },
   {
     id: "Mob-Blacklist",
