@@ -71,6 +71,16 @@ const features = [
     title: "Database Storage",
     desc: "Store active drones in MySQL or YAML. Seamlessly convert between them with /drone convert.",
   },
+  {
+    icon: Code2,
+    title: "Livemap Integration",
+    desc: "Show active drones on Pl3xMap or BlueMap. Includes live markers, custom icons, tooltips, and flight paths.",
+  },
+  {
+    icon: Shield,
+    title: "WorldGuard Hooks",
+    desc: "Built-in WorldGuard support with custom flags to protect regions from drones.",
+  },
 ];
 
 const commandGroups = [
@@ -217,6 +227,19 @@ const configKeys = [
   { key: "custom-model.provider", desc: "Drone model provider: NONE (default player skull), NEXO, ORAXEN, or ITEMSADDER. Requires plugin installed if not NONE." },
   { key: "custom-model.item-id", desc: "Item ID for custom drone model when provider is not NONE. Example: 'nexo:custom_drone'. Must exist in provider plugin." },
   { key: "glowing-enabled", desc: "Enable entity outline glow effect on drone (makes it glow through walls). When disabled, drone is not outlined." },
+  { key: "hooks.livemap.enabled", desc: "Enable Pl3xMap or BlueMap integration to show active drones." },
+  { key: "hooks.livemap.type", desc: "Which livemap to use? (pl3xmap, bluemap)" },
+  { key: "hooks.livemap.marker.tooltip", desc: "The tooltip text shown when hovering or clicking the marker. Available placeholders: <sender>, <receiver>, <status>." },
+  { key: "hooks.livemap.marker.use-custom-icon", desc: "If true, the plugin will use an image file from plugins/AdvancedDeliveryDrones/livemap/." },
+  { key: "hooks.livemap.marker.icon-filename", desc: "The filename of the image in the livemap folder (e.g. drone.png)." },
+  { key: "hooks.livemap.marker.color", desc: "Fallback color (in HEX) for the drone marker if use-custom-icon is false." },
+  { key: "hooks.livemap.marker.radius", desc: "The size of the circular marker if use-custom-icon is false." },
+  { key: "hooks.livemap.flight-path.enabled", desc: "If true, a line will be drawn from the drone's current position to its destination." },
+  { key: "hooks.livemap.flight-path.color", desc: "The color of the flight path line (in HEX)." },
+  { key: "hooks.livemap.flight-path.weight", desc: "The thickness of the flight path line." },
+  { key: "hooks.worldguard", desc: "Enable or disable WorldGuard hooks." },
+  { key: "settings.drone.compose-item-blacklist", desc: "Blacklisted items that cannot be placed into the compose menu." },
+  { key: "settings.drone.mob-sending.blacklist", desc: "Blacklisted mob types that cannot be sent via mob drones." },
 ];
 
 const phPlayer = [
@@ -266,6 +289,33 @@ const phPlayer = [
   { ph: "plugin_version", desc: "Alias for version" },
   { ph: "database_type", desc: "Database storage type" },
   { ph: "language", desc: "Current language locale" },
+  { ph: "total_sockets", desc: "Total amount of sockets" },
+  { ph: "discord_webhook_enabled", desc: "Is Discord webhook enabled" },
+  { ph: "wg_hook_enabled", desc: "Is WorldGuard hook enabled" },
+  { ph: "outgoing_flying_count", desc: "Outgoing drones still flying" },
+  { ph: "outgoing_landed_count", desc: "Outgoing drones landed" },
+  { ph: "max_inventory_size", desc: "Max inventory size based on config" },
+  { ph: "max_leashed_animals_player", desc: "Max leashed animals per drone" },
+  { ph: "leashed_max", desc: "Alias for max_leashed_animals_player" },
+  { ph: "nearest_incoming_distance", desc: "Distance to nearest incoming drone" },
+  { ph: "nearest_incoming_world", desc: "World of nearest incoming drone" },
+  { ph: "nearest_incoming_x", desc: "X coordinate of nearest incoming drone" },
+  { ph: "nearest_incoming_y", desc: "Y coordinate of nearest incoming drone" },
+  { ph: "nearest_incoming_z", desc: "Z coordinate of nearest incoming drone" },
+  { ph: "nearest_incoming_uuid", desc: "UUID of nearest incoming drone" },
+  { ph: "nearest_incoming_sender", desc: "Sender of nearest incoming drone" },
+  { ph: "nearest_incoming_sender_name", desc: "Alias for nearest_incoming_sender" },
+  { ph: "total_drones", desc: "Total active drones on server" },
+  { ph: "active_drones", desc: "Alias for total_drones" },
+  { ph: "total_flying", desc: "Total flying drones on server" },
+  { ph: "total_landed", desc: "Total landed drones on server" },
+  { ph: "config_<setting>", desc: "Dynamic access to config (e.g. config_speed)" },
+  { ph: "outgoing_<index>_<field>", desc: "Access outgoing drone properties (e.g. outgoing_1_distance)" },
+  { ph: "incoming_<index>_<field>", desc: "Access incoming drone properties (e.g. incoming_1_sender)" },
+  { ph: "socket_<index>_<field>", desc: "Access owned socket properties (e.g. socket_1_coords)" },
+  { ph: "drone_<uuid>_<field>", desc: "Access drone properties by UUID (e.g. drone_<id>_eta)" },
+  { ph: "id_<uuid>_<field>", desc: "Alias for drone_<uuid>_<field>" },
+  { ph: "playername_<uuid>", desc: "Resolves UUID to player name" },
 ];
 
 function DocsPage() {
